@@ -33,6 +33,7 @@ const Login = ({ setCurrentView }: Props) => {
       await login(values);
       // Redirect user after successful login (if necessary)
     refresh()
+    window.location.reload()
 
     } catch (err) {
       setMessage("Login failed. Please check your credentials and try again.");
