@@ -1,8 +1,3 @@
 {
-  "arrowParens": "always",
-  "semi": false,
-  "endOfLine": "auto",
-  "singleQuote": false,
-  "tabWidth": 2,
-  "trailingComma": "es5"
+
 }

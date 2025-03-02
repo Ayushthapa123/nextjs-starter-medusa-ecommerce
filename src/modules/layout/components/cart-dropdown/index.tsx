@@ -20,7 +20,7 @@ import { Fragment, useEffect, useRef, useState } from "react"
 const CartDropdown = ({
   cart: cartState,
 }: {
-  cart?: HttpTypes.StoreCart | null
+  cart?: any
 }) => {
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
@@ -30,12 +30,9 @@ const CartDropdown = ({
   const open = () => setCartDropdownOpen(true)
   const close = () => setCartDropdownOpen(false)
 
-  const totalItems =
-    cartState?.items?.reduce((acc, item) => {
-      return acc + item.quantity
-    }, 0) || 0
+  const totalItems = cartState?.lineItems?.length??0
 
-  const subtotal = cartState?.subtotal ?? 0
+  const subtotal = cartState?.totalPrice?.centAmount ?? 0
   const itemRef = useRef<number>(totalItems || 0)
 
   const timedOpen = () => {
@@ -105,12 +102,12 @@ const CartDropdown = ({
             <div className="p-4 flex items-center justify-center">
               <h3 className="text-large-semi">Cart</h3>
             </div>
-            {cartState && cartState.items?.length ? (
+            {cartState && totalItems ? (
               <>
                 <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar p-px">
-                  {cartState.items
-                    .sort((a, b) => {
-                      return (a.created_at ?? "") > (b.created_at ?? "")
+                  {cartState?.lineItems
+                    ?.sort((a, b) => {
+                      return (a.lastModifiedAt ?? "") > (b.lastModifiedAt ?? "")
                         ? -1
                         : 1
                     })
@@ -121,12 +118,14 @@ const CartDropdown = ({
                         data-testid="cart-item"
                       >
                         <LocalizedClientLink
-                          href={`/products/${item.product_handle}`}
+                          href={`/products/${item?.product_handle}`}
                           className="w-24"
                         >
                           <Thumbnail
-                            thumbnail={item.thumbnail}
-                            images={item.variant?.product?.images}
+                       
+                           thumbnail={item?.variant?.images?.[0]?.url}
+
+                            images={item?.variant?.images}
                             size="square"
                           />
                         </LocalizedClientLink>
@@ -136,16 +135,16 @@ const CartDropdown = ({
                               <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
                                 <h3 className="text-base-regular overflow-hidden text-ellipsis">
                                   <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
+                                    href={`/products/${item?.product_handle}`}
                                     data-testid="product-link"
                                   >
-                                    {item.title}
+                                    {item?.name}
                                   </LocalizedClientLink>
                                 </h3>
                                 <LineItemOptions
-                                  variant={item.variant}
+                                  variant={item?.variant}
                                   data-testid="cart-item-variant"
-                                  data-value={item.variant}
+                                  data-value={item?.variant}
                                 />
                                 <span
                                   data-testid="cart-item-quantity"
@@ -158,7 +157,7 @@ const CartDropdown = ({
                                 <LineItemPrice
                                   item={item}
                                   style="tight"
-                                  currencyCode={cartState.currency_code}
+                                  currencyCode={cartState?.currency_code??"USD"}
                                 />
                               </div>
                             </div>
@@ -185,10 +184,11 @@ const CartDropdown = ({
                       data-testid="cart-subtotal"
                       data-value={subtotal}
                     >
-                      {convertToLocale({
+                      total:
+                      {/* {convertToLocale({
                         amount: subtotal,
                         currency_code: cartState.currency_code,
-                      })}
+                      })} */}
                     </span>
                   </div>
                   <LocalizedClientLink href="/cart" passHref>
@@ -210,7 +210,7 @@ const CartDropdown = ({
                   </div>
                   <span>Your shopping bag is empty.</span>
                   <div>
-                    <LocalizedClientLink href="/store">
+                    <LocalizedClientLink href="/">
                       <>
                         <span className="sr-only">Go to all products page</span>
                         <Button onClick={close}>Explore products</Button>

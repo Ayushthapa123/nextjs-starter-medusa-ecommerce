@@ -31,11 +31,11 @@ const LineItemUnitPrice = ({
             <span
               className="line-through"
               data-testid="product-unit-original-price"
-            >
-              {convertToLocale({
+            >111
+              {/* {convertToLocale({
                 amount: original_total / item.quantity,
                 currency_code: currencyCode,
-              })}
+              })} */}
             </span>
           </p>
           {style === "default" && (
@@ -49,10 +49,11 @@ const LineItemUnitPrice = ({
         })}
         data-testid="product-unit-price"
       >
-        {convertToLocale({
+         ${Number(item?.totalPrice?.centAmount/100).toFixed(2)} 
+        {/* {convertToLocale({
           amount: total / item.quantity,
           currency_code: currencyCode,
-        })}
+        })} */}
       </span>
     </div>
   )

@@ -51,10 +51,11 @@ const LineItemPrice = ({
           })}
           data-testid="product-price"
         >
-          {convertToLocale({
+          ${Number(item?.totalPrice?.centAmount/100).toFixed(2)} 
+          {/* {convertToLocale({
             amount: currentPrice,
             currency_code: currencyCode,
-          })}
+          })} */}
         </span>
       </div>
     </div>

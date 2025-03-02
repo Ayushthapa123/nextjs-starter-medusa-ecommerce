@@ -10,7 +10,7 @@ type ItemsTemplateProps = {
 }
 
 const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
-  const items = cart?.items
+  const items = cart?.lineItems
   return (
     <div>
       <div className="pb-3 flex items-center">
@@ -34,14 +34,14 @@ const ItemsTemplate = ({ cart }: ItemsTemplateProps) => {
           {items
             ? items
                 .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
+                  return (a.lastModifiedAt ?? "") > (b.lastModifiedAt ?? "") ? -1 : 1
                 })
                 .map((item) => {
                   return (
                     <Item
                       key={item.id}
                       item={item}
-                      currencyCode={cart?.currency_code}
+                      currencyCode={"USD"}
                     />
                   )
                 })

@@ -23,7 +23,7 @@ const AddAddress = ({
   const { state, open, close: closeModal } = useToggleState(false)
 
   const [formState, formAction] = useActionState(addCustomerAddress, {
-    isDefaultShipping: addresses.length === 0,
+    isDefaultShipping: addresses?.length === 0,
     success: false,
     error: null,
   })

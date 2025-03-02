@@ -1,106 +1,81 @@
-"use client"
+"use client";
 
-import { useActionState } from "react"
-import Input from "@modules/common/components/input"
-import { LOGIN_VIEW } from "@modules/account/templates/login-template"
-import ErrorMessage from "@modules/checkout/components/error-message"
-import { SubmitButton } from "@modules/checkout/components/submit-button"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { signup } from "@lib/data/customer"
+import { useState } from "react";
+import Input from "@modules/common/components/input";
+import { LOGIN_VIEW } from "@modules/account/templates/login-template";
+import ErrorMessage from "@modules/checkout/components/error-message";
+import { SubmitButton } from "@modules/checkout/components/submit-button";
+import LocalizedClientLink from "@modules/common/components/localized-client-link";
+import { useSignup } from "hooks/useSignup";
+
 
 type Props = {
-  setCurrentView: (view: LOGIN_VIEW) => void
-}
+  setCurrentView: (view: LOGIN_VIEW) => void;
+};
 
 const Register = ({ setCurrentView }: Props) => {
-  const [message, formAction] = useActionState(signup, null)
+  const { signup, isLoading, error } = useSignup();
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage(null); // Reset error message
+
+    const formData = new FormData(event.currentTarget);
+
+    const values = {
+      firstName: formData.get("first_name") as string,
+      lastName: formData.get("last_name") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+
+    try {
+      await signup(values);
+      setCurrentView(LOGIN_VIEW.SIGN_IN); // Redirect to login on success
+    } catch (err) {
+      setMessage("Registration failed. Please try again.");
+    }
+  };
 
   return (
-    <div
-      className="max-w-sm flex flex-col items-center"
-      data-testid="register-page"
-    >
+    <div className="max-w-sm flex flex-col items-center" data-testid="register-page">
       <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
+        Become a Graco Store Member
       </h1>
       <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+        Create your Graco Store Member profile and get access to an enhanced shopping experience.
       </p>
-      <form className="w-full flex flex-col" action={formAction}>
+      <form className="w-full flex flex-col" onSubmit={handleSubmit}>
         <div className="flex flex-col w-full gap-y-2">
-          <Input
-            label="First name"
-            name="first_name"
-            required
-            autoComplete="given-name"
-            data-testid="first-name-input"
-          />
-          <Input
-            label="Last name"
-            name="last_name"
-            required
-            autoComplete="family-name"
-            data-testid="last-name-input"
-          />
-          <Input
-            label="Email"
-            name="email"
-            required
-            type="email"
-            autoComplete="email"
-            data-testid="email-input"
-          />
-          <Input
-            label="Phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            data-testid="phone-input"
-          />
-          <Input
-            label="Password"
-            name="password"
-            required
-            type="password"
-            autoComplete="new-password"
-            data-testid="password-input"
-          />
+          <Input label="First name" name="first_name" required autoComplete="given-name" data-testid="first-name-input" />
+          <Input label="Last name" name="last_name" required autoComplete="family-name" data-testid="last-name-input" />
+          <Input label="Email" name="email" required type="email" autoComplete="email" data-testid="email-input" />
+          <Input label="Password" name="password" required type="password" autoComplete="new-password" data-testid="password-input" />
         </div>
-        <ErrorMessage error={message} data-testid="register-error" />
+        <ErrorMessage error={message || error?.message} data-testid="register-error" />
         <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
-          <LocalizedClientLink
-            href="/content/privacy-policy"
-            className="underline"
-          >
+          By creating an account, you agree to Graco Store&apos;s{" "}
+          <LocalizedClientLink href="/content/privacy-policy" className="underline">
             Privacy Policy
           </LocalizedClientLink>{" "}
           and{" "}
-          <LocalizedClientLink
-            href="/content/terms-of-use"
-            className="underline"
-          >
+          <LocalizedClientLink href="/content/terms-of-use" className="underline">
             Terms of Use
-          </LocalizedClientLink>
-          .
+          </LocalizedClientLink>.
         </span>
-        <SubmitButton className="w-full mt-6" data-testid="register-button">
-          Join
+        <SubmitButton className="w-full mt-6" data-testid="register-button" disabled={isLoading}>
+          {isLoading ? "Joining..." : "Join"}
         </SubmitButton>
       </form>
       <span className="text-center text-ui-fg-base text-small-regular mt-6">
         Already a member?{" "}
-        <button
-          onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
-          className="underline"
-        >
+        <button onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)} className="underline">
           Sign in
-        </button>
-        .
+        </button>.
       </span>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

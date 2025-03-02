@@ -13,6 +13,7 @@ import {
   removeAuthToken,
   setAuthToken,
 } from "./cookies"
+import { fetchSignup } from "actions/signUp"
 
 export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
@@ -66,41 +67,44 @@ export async function signup(_currentState: unknown, formData: FormData) {
     last_name: formData.get("last_name") as string,
     phone: formData.get("phone") as string,
   }
+  console.log(customerForm)
 
-  try {
-    const token = await sdk.auth.register("customer", "emailpass", {
-      email: customerForm.email,
-      password: password,
-    })
+  fetchSignup({firstName: customerForm.first_name, lastName: customerForm.last_name, email: customerForm.email, password: password})
 
-    await setAuthToken(token as string)
+  // try {
+  //   const token = await sdk.auth.register("customer", "emailpass", {
+  //     email: customerForm.email,
+  //     password: password,
+  //   })
 
-    const headers = {
-      ...(await getAuthHeaders()),
-    }
+  //   await setAuthToken(token as string)
 
-    const { customer: createdCustomer } = await sdk.store.customer.create(
-      customerForm,
-      {},
-      headers
-    )
+  //   const headers = {
+  //     ...(await getAuthHeaders()),
+  //   }
 
-    const loginToken = await sdk.auth.login("customer", "emailpass", {
-      email: customerForm.email,
-      password,
-    })
+  //   const { customer: createdCustomer } = await sdk.store.customer.create(
+  //     customerForm,
+  //     {},
+  //     headers
+  //   )
 
-    await setAuthToken(loginToken as string)
+  //   const loginToken = await sdk.auth.login("customer", "emailpass", {
+  //     email: customerForm.email,
+  //     password,
+  //   })
 
-    const customerCacheTag = await getCacheTag("customers")
-    revalidateTag(customerCacheTag)
+  //   await setAuthToken(loginToken as string)
 
-    await transferCart()
+  //   const customerCacheTag = await getCacheTag("customers")
+  //   revalidateTag(customerCacheTag)
 
-    return createdCustomer
-  } catch (error: any) {
-    return error.toString()
-  }
+  //   await transferCart()
+
+  //   return createdCustomer
+  // } catch (error: any) {
+  //   return error.toString()
+  // }
 }
 
 export async function login(_currentState: unknown, formData: FormData) {

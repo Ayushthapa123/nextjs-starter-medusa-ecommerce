@@ -1,21 +1,53 @@
-import { Suspense } from "react"
+"use client";
+
+import { Suspense, useEffect, useState } from "react"
 
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import { useAuthStore } from "store/useAuthStore"
+import { useRouter } from "next/navigation"
+import { useSetGetAccessToken } from "hooks/useSetGetAccessToken"
+import { useUserDetail } from "hooks/useUserDetails"
+import { useCart } from "hooks/useCart"
 
-export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+  function NavContent({userId}:{userId:string}) {
+  // const regions = await listRegions().then((regions: StoreRegion[]) => regions)
 
+    const {accessToken,setAccessToken,}=useAuthStore()
+ const {user}=useUserDetail(userId??"",accessToken??"")
+    const router=useRouter()
+    const {refreshAccessToken}=useSetGetAccessToken()
+    const { cart, isLoading, } = useCart(accessToken??"");
+    
+  
+    // here in useEffect call the hook to set the access token
+  
+    useEffect(()=> {
+  const refreshToken=localStorage.getItem("refresh_token") 
+
+  // if no refresh token logout
+  if(!refreshToken){ 
+    localStorage.removeItem("customer_id") 
+    router.refresh()
+  }
+  refreshAccessToken(refreshToken??"").then((res)=>{
+    setAccessToken(res)
+  })
+  // If refreshtoken is present call the api and get and set the access token
+    },[])
+
+  
+  
   return (
     <div className="sticky top-0 inset-x-0 z-50 group">
       <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
         <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
-              <SideMenu regions={regions} />
+              <SideMenu regions={[]} />
             </div>
           </div>
 
@@ -25,7 +57,7 @@ export default async function Nav() {
               className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
               data-testid="nav-store-link"
             >
-              Medusa Store
+              graco store
             </LocalizedClientLink>
           </div>
 
@@ -36,7 +68,7 @@ export default async function Nav() {
                 href="/account"
                 data-testid="nav-account-link"
               >
-                Account
+                Account({user?.firstName})
               </LocalizedClientLink>
             </div>
             <Suspense
@@ -46,7 +78,7 @@ export default async function Nav() {
                   href="/cart"
                   data-testid="nav-cart-link"
                 >
-                  Cart (0)
+                  Cart ({isLoading?0:cart?.lineItems?.length})
                 </LocalizedClientLink>
               }
             >
@@ -58,3 +90,20 @@ export default async function Nav() {
     </div>
   )
 }
+
+
+export const Nav = () => {  
+
+  const [userId,setUserId]=useState(null)
+
+  useEffect(()=> {
+    const userId=localStorage.getItem("customer_id")
+    setUserId(userId)
+  },[])
+
+  return (<>
+  
+  <NavContent userId={userId}/>
+  </>)}
+
+  export default Nav

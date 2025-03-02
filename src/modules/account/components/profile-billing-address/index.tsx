@@ -33,7 +33,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
 
   const [successState, setSuccessState] = React.useState(false)
 
-  const billingAddress = customer.addresses?.find(
+  const billingAddress = customer?.addresses?.find(
     (addr) => addr.is_default_billing
   )
 
