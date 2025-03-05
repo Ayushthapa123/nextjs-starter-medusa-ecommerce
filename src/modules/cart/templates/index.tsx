@@ -7,6 +7,7 @@ import Divider from "@modules/common/components/divider"
 import { HttpTypes } from "@medusajs/types"
 import { useCart } from "hooks/useCart"
 import { useAuthStore } from "store/useAuthStore"
+import { useEffect, useState } from "react"
 
 const CartTemplate = ({
   cart:asCart,
@@ -15,8 +16,14 @@ const CartTemplate = ({
   cart: HttpTypes.StoreCart | null
   customer: HttpTypes.StoreCustomer | null
 }) => {
+
+  const [userId,setUserId]=useState(null);
+  useEffect(()=> {
+    const userId=localStorage.getItem("customer_id")
+    setUserId(userId)
+  },[])
   const {accessToken}=useAuthStore()
-  const {cart}=useCart(accessToken??"")
+  const {cart}=useCart(accessToken??"",userId??"")
 console.log('cccccccccccccccccccccc',cart)
   return (
     <div className="py-12">

@@ -24,18 +24,19 @@ export default  function ProductPreview({
   
   console.log('ppppppppppppppp',product.masterData.current.masterVariant)
 
+  useEffect(()=> {
+    const userId=localStorage.getItem("customer_id")
+    setUserId(userId)
+  
+  },[])
   const {accessToken}=useAuthStore()
   const [userId,setUserId]=useState(null)
 
-  const { addToCart } = useCart(accessToken??"");
+  const { addToCart } = useCart(accessToken??"",userId);
   const {refresh,}=useRouter()
   const queryClient=useQueryClient() 
 
-useEffect(()=> {
-  const userId=localStorage.getItem("customer_id")
-  setUserId(userId)
 
-},[])
 
 
 

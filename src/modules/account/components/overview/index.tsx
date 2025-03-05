@@ -7,9 +7,6 @@ import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { useUserDetail } from "hooks/useUserDetails"
 import { useAuthStore } from "store/useAuthStore"
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useSetGetAccessToken } from "hooks/useSetGetAccessToken"
 
 type OverviewProps = {
   customer: HttpTypes.StoreCustomer | null
@@ -18,28 +15,15 @@ type OverviewProps = {
 
 const Overview = ({ customer, orders }: OverviewProps) => {
   // get the customer info
-const refreshToken=localStorage.getItem("refresh_token") 
   const userId=localStorage.getItem("customer_id")
   const {accessToken,setAccessToken}=useAuthStore()
   const {user}=useUserDetail(userId??"",accessToken??"")  
-  const router=useRouter()
-  const {refreshAccessToken}=useSetGetAccessToken()
 
   console.log('uuuuuuuuuuuuu',user)
 
   // here in useEffect call the hook to set the access token
 
-  useEffect(()=> {
-// if no refresh token logout
-if(!refreshToken){ 
-  localStorage.removeItem("customer_id") 
-  router.refresh()
-}
-refreshAccessToken(refreshToken??"").then((res)=>{
-  setAccessToken(res)
-})
-// If refreshtoken is present call the api and get and set the access token
-  },[])
+
   return (
     <div data-testid="overview-page-wrapper">
       <div className="hidden small:block">

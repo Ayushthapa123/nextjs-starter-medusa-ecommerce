@@ -20,7 +20,7 @@ import { useCart } from "hooks/useCart"
  const {user}=useUserDetail(userId??"",accessToken??"")
     const router=useRouter()
     const {refreshAccessToken}=useSetGetAccessToken()
-    const { cart, isLoading, } = useCart(accessToken??"");
+    const { cart, isLoading, } = useCart(accessToken??"",userId);
     
   
     // here in useEffect call the hook to set the access token

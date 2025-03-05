@@ -111,6 +111,7 @@ export default function ProductActions({
     })
 
     setIsAdding(false)
+    
   }
 
   return (
