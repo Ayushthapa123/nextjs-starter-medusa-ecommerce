@@ -11,7 +11,7 @@ export const getAccessToken = async () => {
       AUTH_URL,
       new URLSearchParams({
         grant_type: "client_credentials",
-        scope: `view_products:${PROJECT_KEY}`,
+        scope: `view_products:${PROJECT_KEY} manage_project:${PROJECT_KEY}`,
       }),
       {
         auth: {

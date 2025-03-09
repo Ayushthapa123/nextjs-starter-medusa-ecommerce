@@ -1,5 +1,5 @@
 "use client";
-import { Container } from "@medusajs/ui"
+import { Button, Container } from "@medusajs/ui"
 
 import ChevronDown from "@modules/common/icons/chevron-down"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -7,6 +7,9 @@ import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 import { useUserDetail } from "hooks/useUserDetails"
 import { useAuthStore } from "store/useAuthStore"
+import { useCart } from "hooks/useCart";
+import { useAnonymousCart } from "hooks/useAnonymousCart";
+import { useAnonymousCartStore } from "store/useAnonymousCartStore";
 
 type OverviewProps = {
   customer: HttpTypes.StoreCustomer | null
@@ -19,15 +22,50 @@ const Overview = ({ customer, orders }: OverviewProps) => {
   const {accessToken,setAccessToken}=useAuthStore()
   const {user}=useUserDetail(userId??"",accessToken??"")  
 
+    const { anonymousCartId } = useAnonymousCartStore();
+  
+
   console.log('uuuuuuuuuuuuu',user)
+    const { cart, addToCart } = useCart(accessToken ?? "", userId ?? "");
+    const { cart: anonymousCart, isLoading: isAnonymousCartLoading } = useAnonymousCart(anonymousCartId);
+  
 
   // here in useEffect call the hook to set the access token
 
+  const handleSyncCart = () => {
+    console.log("Syncing cart...");
+   
+      const anonymousCartIdd = localStorage.getItem("anonymousCartId");
+      if (userId  && anonymousCartIdd && anonymousCartId && !isAnonymousCartLoading && anonymousCart?.lineItems?.length) {
+        // Merge anonymous cart with the user's cart once both are available
+        console.log('Merging anonymous cart items with user cart');
+        // alert('ok?')
+     
+        // Create an array of promises to add items in parallel
+        const addItemPromises = anonymousCart.lineItems.map((item) => {
+          return addToCart(item.id, "1");
+        });
+    
+        // Wait for all promises to resolve
+        Promise.all(addItemPromises)
+          .then(() => {
+            console.log('All items added to cart');
+            // Clear the anonymous cart ID after merging
+            localStorage.removeItem("anonymousCartId");
+          })
+          .catch((error) => {
+            console.error('Error adding items to cart:', error);
+          });
+      }
+  
+  
+  };
 
   return (
     <div data-testid="overview-page-wrapper">
       <div className="hidden small:block">
         <div className="text-xl-semi flex justify-between items-center mb-4">
+          <Button onClick={handleSyncCart}>Sync Cart</Button>
           <span data-testid="welcome-message" data-value={customer?.first_name}>
             Hello {user?.firstName} {user?.lastName}
           </span>

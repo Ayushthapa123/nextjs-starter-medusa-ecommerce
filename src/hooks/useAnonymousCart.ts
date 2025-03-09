@@ -1,69 +1,99 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessTokenForCartManagement as getAccessTokenToManageMyCart } from "../utils/getAccessTokenForCartManagement";
 import { ADD_TO_CART_MUTATION } from "graphql/mutations/addToCartMutation";
-import { getAccessTokenForFetchingAnonymousCart } from "utils/getAccessTokenForFetchingAnonymousCart";
+import { getAccessToken } from "utils/getAccessToken";
 
 const API_URL = `${process.env.NEXT_PUBLIC_CTP_API_URL}/${process.env.NEXT_PUBLIC_CTP_PROJECT_KEY}/graphql`;
 
-// Fetch active cart
-const fetchCart = async () => {
-  const token = await getAccessTokenForFetchingAnonymousCart();
-  if (!token) throw new Error("Failed to get access token");
+// Retrieve the stored cart ID from local storage
+const getStoredCartId = () => {
+  return typeof window !== "undefined" ? localStorage.getItem("anonymousCartId") : null;
+};
 
+// Store the cart ID in local storage
+const storeCartId = (cartId: string) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("anonymousCartId", cartId);
+  }
+};
+
+// Fetch the active cart for an anonymous user
+const fetchAnonymousCart = async (cartId: string) => {
+  const token= await getAccessToken() 
+  if (!token) throw new Error("Failed to get access token");
   const response = await axios.post(
     API_URL,
     {
       query: `
-     query fetchCart {
-  me {
-    activeCart {
-      id
-      version
-      lineItems {
-        id
-        name(locale: "en-US")
-        quantity
+      query fetchCart {
+        cart(id: "${cartId}") {
+          id
+          version
+          totalLineItemQuantity 
+          totalPrice {
+            centAmount
+            currencyCode
+          }
+          lineItems {
+            id
+            name(locale: "en-US")
+            quantity
+            lastModifiedAt
+            totalPrice {
+              centAmount
+              currencyCode
+            }
+            price {
+              value {
+                centAmount
+                currencyCode
+              }
+            }
+            variant {
+              id
+              images {
+                url
+              }
+            }
+          }
+        }
       }
-    }
-  }
-}
       `,
     },
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Token required
         "Content-Type": "application/json",
       },
     }
   );
 
-  return response.data.data.me.activeCart;
+  return response.data.data.cart;
 };
 
-// Create a new cart if none exists
-const createCart = async () => {
-  
-  const token = await getAccessTokenToManageMyCart();
+// Create a new anonymous cart
+const createAnonymousCart = async (anonymousId: string) => {
+
+  const token= await getAccessToken() 
   if (!token) throw new Error("Failed to get access token");
 
   const response = await axios.post(
     API_URL,
     {
       query: `
-        mutation {
-          createCart(
-            draft: { currency: "USD" }
-          ) {
-            id
-            version
-          }
+      mutation {
+        createCart(
+          draft: { currency: "USD", anonymousId: "${anonymousId}" }
+        ) {
+          id
+          version
         }
+      }
       `,
     },
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Token required
         "Content-Type": "application/json",
       },
     }
@@ -72,11 +102,10 @@ const createCart = async () => {
   return response.data.data.createCart;
 };
 
-// Add an item to the cart
-const addToCartAPI = async ({ cartId, version, id, quantity }) => {
-  const token = await getAccessTokenToManageMyCart();
+// Add an item to the anonymous cart
+const addToAnonymousCartAPI = async ({ cartId, version, id, quantity }) => {
+  const token= await getAccessToken() 
   if (!token) throw new Error("Failed to get access token");
-
   const response = await axios.post(
     API_URL,
     {
@@ -85,7 +114,7 @@ const addToCartAPI = async ({ cartId, version, id, quantity }) => {
     },
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Token required
         "Content-Type": "application/json",
       },
     }
@@ -94,28 +123,35 @@ const addToCartAPI = async ({ cartId, version, id, quantity }) => {
   return response.data.data.updateCart;
 };
 
-export const useCart = () => {
+// Hook to manage cart operations for an anonymous user
+export const useAnonymousCart = (anonymousId: string) => {
+
+
   const queryClient = useQueryClient();
+  const storedCartId = getStoredCartId();
 
   // Fetch cart data
   const { data: cart, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: fetchCart,
+    queryKey: ["anonymousCart"],
+    queryFn: () => (storedCartId ? fetchAnonymousCart(storedCartId) : null),
+    enabled: !!storedCartId ,
   });
 
   // Create a cart if none exists
   const createCartMutation = useMutation({
-    mutationFn: createCart,
+    mutationFn: () => createAnonymousCart(anonymousId),
     onSuccess: (newCart) => {
-      queryClient.setQueryData(["cart"], newCart); // Store new cart in cache
+      storeCartId(newCart.id); // Store the cart ID
+      queryClient.setQueryData(["anonymousCart"], newCart);
     },
   });
 
   // Mutation to add product to cart
   const addToCartMutation = useMutation({
-    mutationFn: addToCartAPI,
+    mutationFn: ({ cartId, version, id, quantity }: any) =>
+      addToAnonymousCartAPI({ cartId, version, id, quantity }),
     onSuccess: (updatedCart) => {
-      queryClient.setQueryData(["cart"], updatedCart); // Store updated cart in cache
+      queryClient.setQueryData(["anonymousCart"], updatedCart);
     },
   });
 

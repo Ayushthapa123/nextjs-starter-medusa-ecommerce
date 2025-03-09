@@ -1,12 +1,15 @@
 "use client"
+import { useAnonymousCart } from "hooks/useAnonymousCart";
 import { useCart } from "hooks/useCart";
 import { useProducts } from "hooks/useProducts";
+import { useAnonymousCartStore } from "store/useAnonymousCartStore";
 import { useAuthStore } from "store/useAuthStore";
 
 const ProductList = () => {
 
-  const {accessToken}=useAuthStore()
-  const { cart, isLoading, } = useCart(accessToken??"");
+ 
+const {anonymousCartId}=useAnonymousCartStore()
+  const { cart, isLoading, } = useAnonymousCart(anonymousCartId);
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -14,7 +17,7 @@ const ProductList = () => {
 
   return (
     <ul>
-      All active carts: {JSON.stringify(cart?.lineItems?.length)}
+      All active carts: {JSON.stringify(cart?.lineItems)}
     </ul>
   );
 };

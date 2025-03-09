@@ -11,15 +11,19 @@ import { useAuthStore } from "store/useAuthStore"
 import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useAnonymousCart } from "hooks/useAnonymousCart"
 
 export default  function ProductPreview({
   product,
   isFeatured,
   region,
+  anonymousCartId
 }: {
   product: HttpTypes.StoreProduct
   isFeatured?: boolean
-  region: HttpTypes.StoreRegion
+  region: HttpTypes.StoreRegion 
+  anonymousCartId:string
 }) {
   
   console.log('ppppppppppppppp',product.masterData.current.masterVariant)
@@ -33,6 +37,8 @@ export default  function ProductPreview({
   const [userId,setUserId]=useState(null)
 
   const { addToCart } = useCart(accessToken??"",userId);
+  const { addToCart: addToAnonymousCart} = useAnonymousCart(anonymousCartId);
+
   const {refresh,}=useRouter()
   const queryClient=useQueryClient() 
 
@@ -42,7 +48,11 @@ export default  function ProductPreview({
 
   const handleAddToCart = async () => {
     if(!userId) {
-      alert("Please Login First")
+      // alert("Please Login First")
+      await addToAnonymousCart(product.id, "1");  
+      await queryClient.invalidateQueries({queryKey:["cart"]}) 
+      // refresh()
+      // window.location.reload()
     }
     await addToCart(product.id, "1");  
     await queryClient.invalidateQueries({queryKey:["cart"]})
@@ -56,12 +66,15 @@ export default  function ProductPreview({
 
       <div data-testid="product-wrapper relative w-full h-full ">
         <div className=" relative w-full h-full">
+        <Link href={`/products/${product?.key}`} >
         <Thumbnail
-          thumbnail={product?.masterData?.current?.masterVariant?.images?.[0]?.url || "https://storage.googleapis.com/merchant-center-europe/sample-data/b2c-lifestyle/Ashen_Rug-1.1.jpeg"}
+          thumbnail={product?.masterData?.current?.masterVariant?.images?.[0]?.url }
           images={product?.masterData?.current?.masterVariant?.images}
           size="full"
           isFeatured={isFeatured}
+          
         />
+        </Link>
             <div className=" z-10 right-0 absolute  bottom-1">
           <Button variant="secondary" size="small" onClick={handleAddToCart}>Add to Cart </Button>
         </div>

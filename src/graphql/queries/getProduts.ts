@@ -2,6 +2,7 @@ export const GET_PRODUCTS_QUERY = `
  query GetProducts {
   products {
     results {
+    key
       masterData {
         current {
           slug

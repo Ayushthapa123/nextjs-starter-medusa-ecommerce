@@ -21,6 +21,6 @@ export const getConfig = (prefix: string) => {
         apiUrl: process.env.NEXT_PUBLIC_CTP_API_URL ?? '',
         authUrl: process.env.NEXT_PUBLIC_CTP_AUTH_URL ?? ''
     }
-    alert(JSON.stringify(x))
+    // alert(JSON.stringify(x))
     return x
 }

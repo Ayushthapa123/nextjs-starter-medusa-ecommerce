@@ -11,18 +11,22 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { useAuthStore } from "store/useAuthStore"
+import { useCart } from "hooks/useCart"
+import { useQueryClient } from "@tanstack/react-query"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
   disabled?: boolean
+  userId:string
 }
 
 const optionsAsKeymap = (
   variantOptions: HttpTypes.StoreProductVariant["options"]
 ) => {
   return variantOptions?.reduce((acc: Record<string, string>, varopt: any) => {
-    acc[varopt.option_id] = varopt.value
+    acc[varopt.name] = varopt.value
     return acc
   }, {})
 }
@@ -30,29 +34,32 @@ const optionsAsKeymap = (
 export default function ProductActions({
   product,
   disabled,
+  userId
 }: ProductActionsProps) {
+
+  // return <div>{JSON.stringify(product)}</div>
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
-    if (product.variants?.length === 1) {
-      const variantOptions = optionsAsKeymap(product.variants[0].options)
+    if (product?.variants?.length === 1) {
+      const variantOptions = optionsAsKeymap(product?.variants[0].attributesRaw)
       setOptions(variantOptions ?? {})
     }
-  }, [product.variants])
+  }, [product?.variants])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
       return
     }
 
-    return product.variants.find((v) => {
+    return product?.variants?.find((v) => {
       const variantOptions = optionsAsKeymap(v.options)
       return isEqual(variantOptions, options)
     })
-  }, [product.variants, options])
+  }, [product?.variants, options])
 
   // update the options when a variant is selected
   const setOptionValue = (optionId: string, value: string) => {
@@ -114,10 +121,34 @@ export default function ProductActions({
     
   }
 
+
+  const {accessToken}=useAuthStore()
+
+  const { addToCart:addToCart1 } = useCart(accessToken??"",userId);
+  const queryClient=useQueryClient() 
+
+
+
+
+
+  const handleAddToCart1 = async () => {
+  
+    if(!userId) {
+      // alert("Please Login First")
+    }
+    await addToCart1(product.id, "1");  
+    await queryClient.invalidateQueries({queryKey:["cart"]})
+    // refresh()
+    window.location.reload()
+
+  };
+
+
   return (
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
         <div>
+
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
               {(product.options || []).map((option) => {
@@ -142,6 +173,17 @@ export default function ProductActions({
         <ProductPrice product={product} variant={selectedVariant} />
 
         <Button
+          onClick={handleAddToCart1}
+          disabled={false}
+          variant="primary"
+          className="w-full h-10"
+          isLoading={isAdding}
+          data-testid="add-product-button"
+        >
+        Add To Cart
+        </Button>
+
+        {/* <Button
           onClick={handleAddToCart}
           disabled={
             !inStock ||
@@ -160,8 +202,16 @@ export default function ProductActions({
             : !inStock || !isValidVariant
             ? "Out of stock"
             : "Add to cart"}
-        </Button>
-        <MobileActions
+        </Button> */}
+
+
+
+        {/* {JSON.stringify(product.variants?.[0])} */}
+
+
+
+
+        {/* <MobileActions
           product={product}
           variant={selectedVariant}
           options={options}
@@ -171,7 +221,7 @@ export default function ProductActions({
           isAdding={isAdding}
           show={!inView}
           optionsDisabled={!!disabled || isAdding}
-        />
+        /> */}
       </div>
     </>
   )

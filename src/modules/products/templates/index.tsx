@@ -22,9 +22,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   region,
   countryCode,
 }) => {
-  if (!product || !product.id) {
-    return notFound()
-  }
+  // if (!product || !product.id) {
+  //   return notFound()
+  // }
 
   return (
     <>
@@ -37,7 +37,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <ProductTabs product={product} />
         </div>
         <div className="block w-full relative">
-          <ImageGallery images={product?.images || []} />
+          <ImageGallery images={product?.masterVariant?.images || []} />
         </div>
         <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
           <ProductOnboardingCta />
@@ -50,7 +50,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
               />
             }
           >
-            <ProductActionsWrapper id={product.id} region={region} />
+            <ProductActionsWrapper id={product?.name} region={region} product={product} />
           </Suspense>
         </div>
       </div>

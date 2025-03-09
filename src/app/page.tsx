@@ -19,6 +19,9 @@ export default function Component() {
          <FeaturedProducts collections={[]} region={null}/>
          </div>
          </ReactQueryProvider>
+         <ReactQueryProvider>
+         <ProductList/>
+         </ReactQueryProvider>
    
     <Footer/>
     </div>

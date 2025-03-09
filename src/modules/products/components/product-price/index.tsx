@@ -10,10 +10,25 @@ export default function ProductPrice({
   product: HttpTypes.StoreProduct
   variant?: HttpTypes.StoreProductVariant
 }) {
-  const { cheapestPrice, variantPrice } = getProductPrice({
-    product,
-    variantId: variant?.id,
-  })
+  // const { cheapestPrice, variantPrice } = getProductPrice({
+  //   product,
+  //   variantId: variant?.id,
+  // })
+  const variantPrice={
+    calculated_price:"90",
+    calculated_price_number:90,
+    original_price:"90",
+    original_price_number:90,
+    price_type:"sale",
+    percentage_diff:"10"}; 
+  const cheapestPrice={
+    calculated_price:"90",
+    calculated_price_number:90,
+    original_price:"90",
+    original_price_number:90,
+    price_type:"sale",
+    percentage_diff:"10"}; 
+
 
   const selectedPrice = variant ? variantPrice : cheapestPrice
 

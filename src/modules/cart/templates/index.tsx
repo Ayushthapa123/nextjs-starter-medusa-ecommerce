@@ -8,6 +8,8 @@ import { HttpTypes } from "@medusajs/types"
 import { useCart } from "hooks/useCart"
 import { useAuthStore } from "store/useAuthStore"
 import { useEffect, useState } from "react"
+import { useAnonymousCart } from "hooks/useAnonymousCart"
+import { useAnonymousCartStore } from "store/useAnonymousCartStore"
 
 const CartTemplate = ({
   cart:asCart,
@@ -22,9 +24,13 @@ const CartTemplate = ({
     const userId=localStorage.getItem("customer_id")
     setUserId(userId)
   },[])
-  const {accessToken}=useAuthStore()
-  const {cart}=useCart(accessToken??"",userId??"")
-console.log('cccccccccccccccccccccc',cart)
+  const {accessToken}=useAuthStore() 
+  const {anonymousCartId}=useAnonymousCartStore()
+  const {cart:normalCart}=useCart(accessToken??"",userId??"") 
+  const {cart:anonymousCart}=useAnonymousCart(anonymousCartId) 
+
+  const cart=userId?normalCart:anonymousCart
+
   return (
     <div className="py-12">
       <div className="content-container" data-testid="cart-container">
