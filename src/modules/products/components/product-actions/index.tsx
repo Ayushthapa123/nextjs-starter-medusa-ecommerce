@@ -14,6 +14,8 @@ import MobileActions from "./mobile-actions"
 import { useAuthStore } from "store/useAuthStore"
 import { useCart } from "hooks/useCart"
 import { useQueryClient } from "@tanstack/react-query"
+import { useAnonymousCart } from "hooks/useAnonymousCart"
+import { useAnonymousCartStore } from "store/useAnonymousCartStore"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -123,23 +125,28 @@ export default function ProductActions({
 
 
   const {accessToken}=useAuthStore()
+  const {anonymousCartId}=useAnonymousCartStore()
 
   const { addToCart:addToCart1 } = useCart(accessToken??"",userId);
   const queryClient=useQueryClient() 
 
-
-
-
+   const { addToCart: addToAnonymousCart} = useAnonymousCart(anonymousCartId);
+  
 
   const handleAddToCart1 = async () => {
   
     if(!userId) {
       // alert("Please Login First")
-    }
+      await addToAnonymousCart(product.id, "1");  
+      await queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
+    window.location.reload()
+
+    }else {
     await addToCart1(product.id, "1");  
     await queryClient.invalidateQueries({queryKey:["cart"]})
     // refresh()
     window.location.reload()
+    }
 
   };
 

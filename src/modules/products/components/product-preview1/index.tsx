@@ -39,7 +39,6 @@ export default  function ProductPreview({
   const { addToCart } = useCart(accessToken??"",userId);
   const { addToCart: addToAnonymousCart} = useAnonymousCart(anonymousCartId);
 
-  const {refresh,}=useRouter()
   const queryClient=useQueryClient() 
 
 
@@ -50,14 +49,15 @@ export default  function ProductPreview({
     if(!userId) {
       // alert("Please Login First")
       await addToAnonymousCart(product.id, "1");  
-      await queryClient.invalidateQueries({queryKey:["cart"]}) 
+      await queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
       // refresh()
-      // window.location.reload()
-    }
+      window.location.reload()
+    }else {
     await addToCart(product.id, "1");  
     await queryClient.invalidateQueries({queryKey:["cart"]})
     // refresh()
     window.location.reload()
+    }
 
   };
   const price=Number(product.masterData.current.masterVariant.prices?.[0]?.value?.centAmount??0 )/100

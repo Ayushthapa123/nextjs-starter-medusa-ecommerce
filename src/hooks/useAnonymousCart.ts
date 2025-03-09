@@ -36,6 +36,7 @@ const fetchAnonymousCart = async (cartId: string) => {
           }
           lineItems {
             id
+            productId
             name(locale: "en-US")
             quantity
             lastModifiedAt

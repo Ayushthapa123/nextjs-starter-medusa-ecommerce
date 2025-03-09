@@ -43,7 +43,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
      
         // Create an array of promises to add items in parallel
         const addItemPromises = anonymousCart.lineItems.map((item) => {
-          return addToCart(item.id, "1");
+          return addToCart(item.productId, "1");
         });
     
         // Wait for all promises to resolve
@@ -65,7 +65,7 @@ const Overview = ({ customer, orders }: OverviewProps) => {
     <div data-testid="overview-page-wrapper">
       <div className="hidden small:block">
         <div className="text-xl-semi flex justify-between items-center mb-4">
-          <Button onClick={handleSyncCart}>Sync Cart</Button>
+         {  anonymousCart?.lineItems.length&&<Button onClick={handleSyncCart}>Sync Cart</Button>}
           <span data-testid="welcome-message" data-value={customer?.first_name}>
             Hello {user?.firstName} {user?.lastName}
           </span>
