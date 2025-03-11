@@ -46,8 +46,9 @@ export default  function ProductPreview({
 
 
   const handleAddToCart = async () => {
+
     if(!userId) {
-      // alert("Please Login First")
+   
       await addToAnonymousCart(product.id, "1");  
       await queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
       // refresh()
