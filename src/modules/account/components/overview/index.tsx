@@ -10,7 +10,7 @@ import { useAuthStore } from "store/useAuthStore";
 import { useCart } from "hooks/useCart";
 import { useAnonymousCart } from "hooks/useAnonymousCart";
 import { useAnonymousCartStore } from "store/useAnonymousCartStore";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type OverviewProps = {
   customer: HttpTypes.StoreCustomer | null;
@@ -65,13 +65,16 @@ const Overview = ({ customer, orders }: OverviewProps) => {
         });
     }
   };
+  const isSynced=useRef(false) 
 
-  // useEffect(() => {
-  //   const anonymousCartId = localStorage.getItem("anonymousCartId");
-  //   if (anonymousCart?.lineItems?.length && anonymousCartId) {
-  //     handleSyncCart();
-  //   }
-  // }, [anonymousCart]);
+
+  useEffect(() => {
+    const anonymousCartId = localStorage.getItem("anonymousCartId");
+    if (anonymousCart?.lineItems?.length && anonymousCartId && !isSynced.current) { 
+      isSynced.current=true
+      handleSyncCart();
+    }
+  });
 
   return (
     <div data-testid="overview-page-wrapper">
