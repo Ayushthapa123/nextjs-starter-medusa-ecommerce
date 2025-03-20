@@ -73,6 +73,8 @@ const Payment = ({
   }
 
   const handleSubmit = async () => {
+    return router.push(pathname + "?step=review", { scroll: false })
+
     setIsLoading(true)
     try {
       const shouldInputCard =

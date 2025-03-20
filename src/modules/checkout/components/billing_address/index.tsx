@@ -3,17 +3,17 @@ import Input from "@modules/common/components/input"
 import React, { useState } from "react"
 import CountrySelect from "../country-select"
 
-const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
+const BillingAddress = ({ cart ,customer,billingAddress}: { cart: HttpTypes.StoreCart | null,customer:any ,billingAddress:any}) => {
   const [formData, setFormData] = useState<any>({
-    "billing_address.first_name": cart?.billing_address?.first_name || "",
-    "billing_address.last_name": cart?.billing_address?.last_name || "",
-    "billing_address.address_1": cart?.billing_address?.address_1 || "",
-    "billing_address.company": cart?.billing_address?.company || "",
-    "billing_address.postal_code": cart?.billing_address?.postal_code || "",
-    "billing_address.city": cart?.billing_address?.city || "",
-    "billing_address.country_code": cart?.billing_address?.country_code || "",
-    "billing_address.province": cart?.billing_address?.province || "",
-    "billing_address.phone": cart?.billing_address?.phone || "",
+    "billing_address.first_name": billingAddress?.firstName || "",
+    "billing_address.last_name": billingAddress?.lastName|| "",
+    "billing_address.address_1": billingAddress?.streetName || "",
+    "billing_address.company": billingAddress?.company || "",
+    "billing_address.postal_code": billingAddress?.postalCode || "",
+    "billing_address.city": billingAddress?.city || "",
+    "billing_address.country_code": billingAddress?.country || "",
+    "billing_address.province": billingAddress?.state || "",
+    "billing_address.phone": billingAddress?.phone || "",
   })
 
   const handleChange = (
@@ -79,6 +79,8 @@ const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
           name="billing_address.city"
           autoComplete="address-level2"
           value={formData["billing_address.city"]}
+          onChange={handleChange}
+
         />
         <CountrySelect
           name="billing_address.country_code"
@@ -86,7 +88,7 @@ const BillingAddress = ({ cart }: { cart: HttpTypes.StoreCart | null }) => {
           region={cart?.region}
           value={formData["billing_address.country_code"]}
           onChange={handleChange}
-          required
+          // required
           data-testid="billing-country-select"
         />
         <Input

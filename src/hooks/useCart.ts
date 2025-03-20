@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessTokenForCartManagement as getAccessTokenToManageMyCart } from "../utils/getAccessTokenForCartManagement";
-import { ADD_TO_CART_MUTATION } from "graphql/mutations/addToCartMutation";
+import { ADD_TO_CART_MUTATION, APPLY_PROMO_CODE_MUTATION, SET_SHIPPING_ADDRESS_MUTATION } from "graphql/mutations/addToCartMutation";
+import { getAccessToken } from "utils/getAccessToken";
 
 const API_URL = `${process.env.NEXT_PUBLIC_CTP_API_URL}/${process.env.NEXT_PUBLIC_CTP_PROJECT_KEY}/graphql`;
 
@@ -12,9 +12,33 @@ const fetchCart = async (accessToken:string) => {
     API_URL,
     {
       query: `
-      query fetchCart {
+     query fetchCart {
         me {
+        
           activeCart {
+            shippingAddress {
+              firstName 
+              lastName 
+              company 
+              streetName 
+              city
+              state 
+              country 
+              postalCode
+              phone
+            }
+             billingAddress {
+              firstName 
+              lastName 
+              company 
+              streetName 
+              city
+              state 
+              country 
+              postalCode
+              phone
+            }
+            
             id
             version
             totalLineItemQuantity 
@@ -44,6 +68,20 @@ const fetchCart = async (accessToken:string) => {
                 }
                 }
             }
+          }
+             customer {
+              
+            id 
+            firstName 
+            lastName 
+            email 
+            companyName 
+            customerNumber 
+              
+              
+         
+           
+            
           }
         }
       }
@@ -108,6 +146,60 @@ const addToCartAPI = async ({ cartId, version, id, quantity,accessToken }) => {
   return response.data.data.updateCart;
 };
 
+
+
+const setShippingAddressAPI = async ({ cartId, version, address, billingAddress,accessToken }) => {
+  const response = await axios.post(
+    API_URL,
+    {
+      query: SET_SHIPPING_ADDRESS_MUTATION,
+      variables: { cartId, version, address,billingAddress },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data.data.updateCart;
+};
+
+
+const applyPromoCodeAPI = async ({ cartId, version, code, accessToken }) => {
+   const token= await getAccessToken() 
+  const response = await axios.post(
+    API_URL,
+    {
+      query: APPLY_PROMO_CODE_MUTATION,
+      variables: { cartId, version, code },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  console.log('rrrrrrrrrrrrrrrrrrrrrrrraaaa',response.data)
+
+  return response.data;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Hook to manage cart operations for a logged-in user
 export const useCart = (accessToken:string,customerId:string) => {
   const queryClient = useQueryClient();
@@ -152,5 +244,112 @@ export const useCart = (accessToken:string,customerId:string) => {
     });
   };
 
-  return { cart, isLoading, addToCart };
+    // Mutation to set shipping address
+    const setShippingAddressMutation = useMutation({
+      mutationFn: setShippingAddressAPI,
+      onSuccess: (updatedCart) => {
+        queryClient.setQueryData(['cart'], updatedCart);
+      },
+    });
+  
+    const setShippingAddress = async (address,billingAddress) => {
+      if (!cart) {
+        throw new Error('Cart not found');
+      }
+  
+      await setShippingAddressMutation.mutateAsync({
+        cartId: cart.id,
+        version: cart.version,
+        address,
+        billingAddress,
+        accessToken,
+      });
+    };
+  
+ 
+    const applyPromoCodeMutation = useMutation({
+      mutationFn: applyPromoCodeAPI,
+      onSuccess: (updatedCart) => {
+        queryClient.setQueryData(["cart"], updatedCart);
+      },
+    });
+    
+    const applyPromoCode = async (code: string) => {
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+    
+      await applyPromoCodeMutation.mutateAsync({
+        cartId: cart.id,
+        version: cart.version,
+        code,
+        accessToken,
+      });
+    };
+
+
+
+
+
+
+    // Mutation to place an order
+  const placeOrderMutation = useMutation({
+    mutationFn: async () => {
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+
+      const response = await axios.post(
+        API_URL,
+        {
+          query: `
+            mutation PlaceOrder($cartId: String!, $version: Long!) {
+              createOrderFromCart(draft: { id: $cartId, version: $version }) {
+                id
+                orderNumber
+                totalPrice {
+                  centAmount
+                  currencyCode
+                }
+                lineItems {
+                  id
+                  name(locale: "en-US")
+                  quantity
+                  totalPrice {
+                    centAmount
+                    currencyCode
+                  }
+                }
+                orderState
+              }
+            }
+          `,
+          variables: { cartId: cart.id, version: cart.version },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.errors) {
+        throw new Error(response.data.errors[0].message);
+      }
+
+      return response.data.data.createOrderFromCart;
+    },
+    onSuccess: (order) => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+
+  // Function to trigger placeOrder mutation
+  const placeOrder = async () => {
+    return await placeOrderMutation.mutateAsync();
+  };
+    
+
+  return { cart, isLoading, addToCart,setShippingAddress,applyPromoCode,placeOrder };
 };

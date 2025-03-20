@@ -22,3 +22,50 @@ export const ADD_TO_CART_MUTATION = `
     }
   }
 `;
+
+
+
+export const SET_SHIPPING_ADDRESS_MUTATION = `
+  mutation SetShippingAddress($cartId: String!, $version: Long!, $address: AddressInput!,$billingAddress: AddressInput!) {
+    updateCart(
+      id: $cartId, 
+      version: $version, 
+      actions: [
+        { setShippingAddress: { address: $address } }, 
+        { setBillingAddress: { address: $billingAddress } }
+      ]
+    ) {
+      id
+      version
+      shippingAddress {
+        firstName
+        lastName
+        streetName
+        postalCode
+        city
+        country
+      }
+    }
+  }
+`;
+
+
+
+export const APPLY_PROMO_CODE_MUTATION = `
+  mutation applyDiscountCode($cartId: String!, $version: Long!, $code: String!) {
+    updateCart(
+      id: $cartId
+      version: $version
+      actions: [{ addDiscountCode: { code: $code } }]
+    ) {
+      id
+      version
+      discountCodes {
+        discountCode {
+          id
+          code
+        }
+      }
+    }
+  }
+`;

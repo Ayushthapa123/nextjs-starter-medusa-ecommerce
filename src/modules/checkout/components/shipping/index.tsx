@@ -129,7 +129,7 @@ const Shipping: React.FC<ShippingProps> = ({
           <div className="pb-8">
             <RadioGroup
               value={shippingMethodId}
-              onChange={handleSetShippingMethod}
+              // onChange={handleSetShippingMethod}
             >
               {availableShippingMethods?.map((option) => {
                 const isDisabled =
@@ -190,7 +190,7 @@ const Shipping: React.FC<ShippingProps> = ({
             className="mt-6"
             onClick={handleSubmit}
             isLoading={isLoading}
-            disabled={!cart.shipping_methods?.[0]}
+            // disabled={!cart.shipping_methods?.[0]}
             data-testid="submit-delivery-option-button"
           >
             Continue to payment

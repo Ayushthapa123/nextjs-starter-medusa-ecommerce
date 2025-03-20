@@ -1,14 +1,20 @@
 "use client"
 
-import { Heading, Text, clx } from "@medusajs/ui"
+import { Button, Heading, Text, clx } from "@medusajs/ui"
 
 import PaymentButton from "../payment-button"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useCart } from "hooks/useCart"
 
-const Review = ({ cart }: { cart: any }) => {
+const Review = ({ cart ,customerId, accessToken}: { cart: any ,customerId:string , accessToken:string}) => {
   const searchParams = useSearchParams()
+  const {placeOrder}=useCart(accessToken,customerId)
 
   const isOpen = searchParams.get("step") === "review"
+
+    const router = useRouter()
+    const pathname = usePathname()
+  
 
   const paidByGiftcard =
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
@@ -17,6 +23,16 @@ const Review = ({ cart }: { cart: any }) => {
     cart.shipping_address &&
     cart.shipping_methods.length > 0 &&
     (cart.payment_collection || paidByGiftcard)
+
+    const handlePlaceOrder = async () => {
+      try {
+        await placeOrder() 
+        alert('Order Placed Successfully')
+        router.push("/account", { scroll: false })
+      } catch (error) {
+        console.error("Error in placeOrder:", error)
+      }
+    }
 
   return (
     <div className="bg-white">
@@ -33,7 +49,9 @@ const Review = ({ cart }: { cart: any }) => {
           Review
         </Heading>
       </div>
-      {isOpen && previousStepsCompleted && (
+      {/* {isOpen && previousStepsCompleted && ( */}
+      {isOpen && true && (
+
         <>
           <div className="flex items-start gap-x-1 w-full mb-6">
             <div className="w-full">
@@ -45,7 +63,8 @@ const Review = ({ cart }: { cart: any }) => {
               </Text>
             </div>
           </div>
-          <PaymentButton cart={cart} data-testid="submit-order-button" />
+          <Button size="large" onClick={handlePlaceOrder}>Place order</Button>
+          {/* <PaymentButton cart={cart} data-testid="submit-order-button" /> */}
         </>
       )}
     </div>

@@ -12,7 +12,7 @@ type ItemsTemplateProps = {
 }
 
 const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
-  const items = cart.items
+  const items = cart.lineItems
   const hasOverflow = items && items.length > 4
 
   return (
@@ -27,7 +27,7 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
           {items
             ? items
                 .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
+                  return (a.lastModifiedAt ?? "") > (b.lastModifiedAt ?? "") ? -1 : 1
                 })
                 .map((item) => {
                   return (
@@ -35,7 +35,7 @@ const ItemsPreviewTemplate = ({ cart }: ItemsTemplateProps) => {
                       key={item.id}
                       item={item}
                       type="preview"
-                      currencyCode={cart.currency_code}
+                      currencyCode={"USD"}
                     />
                   )
                 })

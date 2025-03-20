@@ -12,23 +12,27 @@ const ShippingAddress = ({
   cart,
   checked,
   onChange,
+  shippingAddress
 }: {
   customer: HttpTypes.StoreCustomer | null
   cart: HttpTypes.StoreCart | null
   checked: boolean
   onChange: () => void
+  shippingAddress?:any
 }) => {
+
+  console.log("cccccccccccustomer", customer)
   const [formData, setFormData] = useState<Record<string, any>>({
-    "shipping_address.first_name": cart?.shipping_address?.first_name || "",
-    "shipping_address.last_name": cart?.shipping_address?.last_name || "",
-    "shipping_address.address_1": cart?.shipping_address?.address_1 || "",
-    "shipping_address.company": cart?.shipping_address?.company || "",
-    "shipping_address.postal_code": cart?.shipping_address?.postal_code || "",
-    "shipping_address.city": cart?.shipping_address?.city || "",
-    "shipping_address.country_code": cart?.shipping_address?.country_code || "",
-    "shipping_address.province": cart?.shipping_address?.province || "",
-    "shipping_address.phone": cart?.shipping_address?.phone || "",
-    email: cart?.email || "",
+    "shipping_address.first_name": shippingAddress?.firstName ?? "",
+    "shipping_address.last_name": shippingAddress?.lastName || "",
+    "shipping_address.address_1": shippingAddress?.streetName || "",
+    "shipping_address.company": shippingAddress?.company || "",
+    "shipping_address.postal_code": shippingAddress?.postalCode || "",
+    "shipping_address.city": shippingAddress?.city || "",
+    "shipping_address.country_code": shippingAddress.country || "",
+    "shipping_address.province": shippingAddress?.state || "",
+    "shipping_address.phone": shippingAddress?.phone || "",
+    email: customer?.email || "",
   })
 
   const countriesInRegion = useMemo(
@@ -39,7 +43,7 @@ const ShippingAddress = ({
   // check if customer has saved addresses that are in the current region
   const addressesInRegion = useMemo(
     () =>
-      customer?.addresses.filter(
+      customer?.addresses?.filter(
         (a) => a.country_code && countriesInRegion?.includes(a.country_code)
       ),
     [customer?.addresses, countriesInRegion]
@@ -93,7 +97,7 @@ const ShippingAddress = ({
   }
 
   return (
-    <>
+    <>{JSON.stringify(customer)}
       {customer && (addressesInRegion?.length || 0) > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
           <p className="text-small-regular">
@@ -170,7 +174,7 @@ const ShippingAddress = ({
           region={cart?.region}
           value={formData["shipping_address.country_code"]}
           onChange={handleChange}
-          required
+          // required
           data-testid="shipping-country-select"
         />
         <Input

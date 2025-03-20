@@ -10,15 +10,20 @@ import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
+import { useCart } from "hooks/useCart";
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
     promotions: HttpTypes.StorePromotion[]
   }
+  userId:string 
+  accessToken:string
 }
 
-const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
+const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) => {
   const [isOpen, setIsOpen] = React.useState(false)
+
+  const {applyPromoCode}=useCart(userId,accessToken)
 
   const { items = [], promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
@@ -36,17 +41,32 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
     if (!code) {
       return
     }
-    const input = document.getElementById("promotion-input") as HTMLInputElement
-    const codes = promotions
-      .filter((p) => p.code === undefined)
-      .map((p) => p.code!)
-    codes.push(code.toString())
+    try {
+      const res=await applyPromoCode(code.toString()); 
+      console.log('rrrrrrrrrrrrrrrrr',res)
 
-    await applyPromotions(codes)
-
-    if (input) {
-      input.value = ""
+      if(res?.errors){ 
+        alert(res?.errors?.[0]?.message)
+      }else {
+      alert("Promo code applied successfully!");
+        
+      }
+    } catch (error) {
+      alert('failed')
+      console.error("Failed to apply promo code:", error);
     }
+    // return
+    // const input = document.getElementById("promotion-input") as HTMLInputElement
+    // const codes = promotions
+    //   .filter((p) => p.code === undefined)
+    //   .map((p) => p.code!)
+    // codes.push(code.toString())
+
+    // await applyPromotions(codes)
+
+    // if (input) {
+    //   input.value = ""
+    // }
   }
 
   const [message, formAction] = useActionState(submitPromotionForm, null)

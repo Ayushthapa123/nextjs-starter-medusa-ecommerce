@@ -40,7 +40,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
       )
     default:
-      return <Button disabled>Select a payment method</Button>
+      // return <Button disabled>Select a payment method</Button>
+      return (
+        <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
   }
 }
 
@@ -174,7 +177,10 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   return (
     <>
       <Button
-        disabled={notReady}
+        // disabled={notReady}
+        disabled={false}
+
+        
         isLoading={submitting}
         onClick={handlePayment}
         size="large"

@@ -16,6 +16,7 @@ type CartTotalsProps = {
   }
 }
 
+
 const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
   const {
     currency_code,
