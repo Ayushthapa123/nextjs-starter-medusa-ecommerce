@@ -29,7 +29,7 @@ const ShippingAddress = ({
     "shipping_address.company": shippingAddress?.company || "",
     "shipping_address.postal_code": shippingAddress?.postalCode || "",
     "shipping_address.city": shippingAddress?.city || "",
-    "shipping_address.country_code": shippingAddress.country || "",
+    "shipping_address.country_code": shippingAddress?.country || "",
     "shipping_address.province": shippingAddress?.state || "",
     "shipping_address.phone": shippingAddress?.phone || "",
     email: customer?.email || "",
@@ -97,7 +97,7 @@ const ShippingAddress = ({
   }
 
   return (
-    <>{JSON.stringify(customer)}
+    <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
         <Container className="mb-6 flex flex-col gap-y-4 p-5">
           <p className="text-small-regular">

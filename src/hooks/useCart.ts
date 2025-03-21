@@ -270,7 +270,7 @@ export const useCart = (accessToken:string,customerId:string) => {
     const applyPromoCodeMutation = useMutation({
       mutationFn: applyPromoCodeAPI,
       onSuccess: (updatedCart) => {
-        queryClient.setQueryData(["cart"], updatedCart);
+        // queryClient.setQueryData(["cart"], updatedCart);
       },
     });
     
@@ -279,12 +279,13 @@ export const useCart = (accessToken:string,customerId:string) => {
         throw new Error("Cart not found");
       }
     
-      await applyPromoCodeMutation.mutateAsync({
+      const res=await applyPromoCodeMutation.mutateAsync({
         cartId: cart.id,
         version: cart.version,
         code,
         accessToken,
       });
+      return res
     };
 
 

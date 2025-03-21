@@ -60,12 +60,7 @@ export const APPLY_PROMO_CODE_MUTATION = `
     ) {
       id
       version
-      discountCodes {
-        discountCode {
-          id
-          code
-        }
-      }
+    
     }
   }
 `;

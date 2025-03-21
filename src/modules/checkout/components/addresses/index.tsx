@@ -103,7 +103,7 @@ const Addresses = ({
       phone: billingAddress.phone,
     }
 
-    setShippingAddress(address,billingAddressModified);
+    setShippingAddress(address,sameAsBilling?address:billingAddressModified);
     // alert(JSON.stringify(data)); // Debugging: Check collected data
     router.push(pathname + "?step=delivery");
   };
@@ -187,11 +187,11 @@ const Addresses = ({
                       {cart.shippingAddress.address_2}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
-                      {cart.shippingAddress.postalCode},{" "}
-                      {cart.shippingAddress.city}
+                      {cart.shippingAddress?.postalCode},{" "}
+                      {cart.shippingAddress?.city}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
-                      {cart.shippingAddress.country?.toUpperCase()}
+                      {cart.shippingAddress?.country?.toUpperCase()}
                     </Text>
                   </div>
 

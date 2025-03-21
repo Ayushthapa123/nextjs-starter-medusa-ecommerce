@@ -41,20 +41,19 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
     if (!code) {
       return
     }
-    try {
-      const res=await applyPromoCode(code.toString()); 
-      console.log('rrrrrrrrrrrrrrrrr',res)
+ 
+       applyPromoCode(code.toString()).then((res)=> {
+        if(res?.errors){
+          alert(res.errors?.[0]?.message)
+          window.location.reload()
 
-      if(res?.errors){ 
-        alert(res?.errors?.[0]?.message)
-      }else {
-      alert("Promo code applied successfully!");
-        
-      }
-    } catch (error) {
-      alert('failed')
-      console.error("Failed to apply promo code:", error);
-    }
+        }else {
+          alert("Promo code applied successfully!");
+          window.location.reload()
+        }
+      }); 
+
+ 
     // return
     // const input = document.getElementById("promotion-input") as HTMLInputElement
     // const codes = promotions
