@@ -96,6 +96,14 @@ const ShippingAddress = ({
     })
   }
 
+  const region = {
+    countries: [
+      { iso_2: "US", display_name: "United States" },
+      { iso_2: "CA", display_name: "Canada" },
+      { iso_2: "GB", display_name: "United Kingdom" },
+    ],
+  }
+
   return (
     <>
       {customer && (addressesInRegion?.length || 0) > 0 && (
@@ -171,7 +179,8 @@ const ShippingAddress = ({
         <CountrySelect
           name="shipping_address.country_code"
           autoComplete="country"
-          region={cart?.region}
+          
+          region={region}
           value={formData["shipping_address.country_code"]}
           onChange={handleChange}
           // required

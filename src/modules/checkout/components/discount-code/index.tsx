@@ -1,6 +1,6 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text, Tooltip } from "@medusajs/ui"
+import { Badge, Divider, Heading, Input, Label, Text, Tooltip } from "@medusajs/ui"
 import React, { useActionState } from "react";
 
 import { applyPromotions, submitPromotionForm } from "@lib/data/cart"
@@ -69,6 +69,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
   }
 
   const [message, formAction] = useActionState(submitPromotionForm, null)
+  const activeDiscountCodes=cart.discountCodes
+  const codeList=activeDiscountCodes?.map((code) => {
+    return code.discountCode.code
+  }).join(", ")
+  console.log('dddddddddddddd',activeDiscountCodes)
 
   return (
     <div className="w-full bg-white flex flex-col">
@@ -83,11 +88,14 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
             >
               Add Promotion Code(s)
             </button>
-
-            {/* <Tooltip content="You can add multiple promotion codes">
+            
+{/* 
+            <Tooltip content="You can add multiple promotion codes">
               <InformationCircleSolid color="var(--fg-muted)" />
             </Tooltip> */}
           </Label>
+          <Divider/>
+            <Text className="txt-medium text-ui-fg-muted">Applied Codes: {codeList} </Text>
 
           {isOpen && (
             <>

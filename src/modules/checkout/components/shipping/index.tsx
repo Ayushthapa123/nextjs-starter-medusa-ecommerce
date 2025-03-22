@@ -69,13 +69,17 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   const handleSetShippingMethod = async (id: string) => {
+ 
     setError(null)
+
     let currentId: string | null = null
-    setIsLoading(true)
+    // setIsLoading(true)
     setShippingMethodId((prev) => {
       currentId = prev
       return id
     })
+
+    return
 
     await setShippingMethod({ cartId: cart.id, shippingMethodId: id })
       .catch((err) => {
@@ -128,8 +132,8 @@ const Shipping: React.FC<ShippingProps> = ({
         <div data-testid="delivery-options-container">
           <div className="pb-8">
             <RadioGroup
-              value={shippingMethodId}
-              // onChange={handleSetShippingMethod}
+              // value={shippingMethodId}
+              onChange={handleSetShippingMethod}
             >
               {availableShippingMethods?.map((option) => {
                 const isDisabled =
@@ -142,7 +146,7 @@ const Shipping: React.FC<ShippingProps> = ({
                     key={option.id}
                     value={option.id}
                     data-testid="delivery-option-radio"
-                    disabled={isDisabled}
+                    // disabled={isDisabled}
                     className={clx(
                       "flex items-center justify-between text-small-regular cursor-pointer py-4 border rounded-rounded px-8 mb-2 hover:shadow-borders-interactive-with-active",
                       {

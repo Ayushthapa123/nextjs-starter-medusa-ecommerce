@@ -162,7 +162,7 @@ const {accessToken}=useAuthStore()
 
      {cart && <Payment cart={cart} availablePaymentMethods={paymentMethods} />}
 
-      {cart &&<Review cart={cart} customerId={ourCustomer?.customer.id} accessToken={accessToken} /> }
+      {cart && accessToken &&<Review cart={cart} customerId={ourCustomer?.customer.id} accessToken={accessToken} /> }
     </div>
   )
 }

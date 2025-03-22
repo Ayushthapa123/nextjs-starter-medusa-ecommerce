@@ -28,6 +28,14 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
     shipping_subtotal,
   } = totals
 
+  const subTotal=totals.totalPrice.centAmount 
+  console.log('sssssssssssss',subTotal)
+
+  const totalDiscount=totals.discountOnTotalPrice?.discountedAmount?.centAmount 
+
+  const totalTax=totals.taxedPrice.totalTax.centAmount 
+  const taxedPrice=totals.taxedPrice.totalNet.centAmount
+
   return (
     <div>
       <div className="flex flex-col gap-y-2 txt-medium text-ui-fg-subtle ">
@@ -36,7 +44,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
             Subtotal (excl. shipping and taxes)
           </span>
           <span data-testid="cart-subtotal" data-value={subtotal || 0}>
-            {convertToLocale({ amount: subtotal ?? 0, currency_code })}
+            ${convertToLocale({ amount: (subTotal ?? 0)/100, currency_code })}
           </span>
         </div>
         {!!discount_total && (
@@ -48,7 +56,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
               data-value={discount_total || 0}
             >
               -{" "}
-              {convertToLocale({ amount: discount_total ?? 0, currency_code })}
+             $ {convertToLocale({ amount: (totalDiscount ?? 0)/100, currency_code })}
             </span>
           </div>
         )}
@@ -61,7 +69,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
         <div className="flex justify-between">
           <span className="flex gap-x-1 items-center ">Taxes</span>
           <span data-testid="cart-taxes" data-value={tax_total || 0}>
-            {convertToLocale({ amount: tax_total ?? 0, currency_code })}
+            ${convertToLocale({ amount: (totalTax ?? 0)/100, currency_code })}
           </span>
         </div>
         {!!gift_card_total && (
@@ -86,7 +94,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
           data-testid="cart-total"
           data-value={total || 0}
         >
-          {convertToLocale({ amount: total ?? 0, currency_code })}
+          ${convertToLocale({ amount: (subTotal ?? 0)/100, currency_code })}
         </span>
       </div>
       <div className="h-px w-full border-b border-gray-200 mt-4" />

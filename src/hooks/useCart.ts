@@ -16,6 +16,41 @@ const fetchCart = async (accessToken:string) => {
         me {
         
           activeCart {
+
+            totalPrice {
+              centAmount
+              currencyCode
+            }
+            discountOnTotalPrice {
+              discountedAmount {
+                centAmount 
+                currencyCode
+              }
+              discountedAmount {
+                centAmount 
+                currencyCode
+              }
+              
+            }
+            taxedPrice {
+              totalNet  {
+                centAmount
+              }
+              totalTax {
+                centAmount
+              }
+              totalGross {
+                centAmount
+              }
+              
+            }
+           discountCodes {
+              state
+              discountCode {
+                code 
+                key
+              }
+            }
             shippingAddress {
               firstName 
               lastName 

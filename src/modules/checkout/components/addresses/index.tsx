@@ -203,10 +203,10 @@ const Addresses = ({
                       Contact
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
-                      {cart.shippingAddress.phone}
+                      {cart.shippingAddress?.phone}
                     </Text>
                     <Text className="txt-medium text-ui-fg-subtle">
-                      {cart.email}
+                      {cart.shippingAddress?.email}
                     </Text>
                   </div>
 
