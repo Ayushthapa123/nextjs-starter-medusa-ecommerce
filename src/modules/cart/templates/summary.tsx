@@ -7,6 +7,7 @@ import Divider from "@modules/common/components/divider"
 import DiscountCode from "@modules/checkout/components/discount-code"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { HttpTypes } from "@medusajs/types"
+import { useAuthStore } from "store/useAuthStore"
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart & {
@@ -26,6 +27,7 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 
 const Summary = ({ cart }: SummaryProps) => {
   const step = getCheckoutStep(cart)
+  const {accessToken}=useAuthStore()
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -39,8 +41,9 @@ const Summary = ({ cart }: SummaryProps) => {
         href={"/checkout?step=" + step}
         // href="#"
         data-testid="checkout-button"
+        
       >
-        <Button className="w-full h-10">Go to checkout</Button>
+        <Button className="w-full h-10" disabled={accessToken ? false : true}>Go to checkout </Button>
       </LocalizedClientLink>
     </div>
   )

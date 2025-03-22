@@ -28,13 +28,13 @@ const CartTotals: React.FC<CartTotalsProps> = ({ totals }) => {
     shipping_subtotal,
   } = totals
 
-  const subTotal=totals.totalPrice.centAmount 
+  const subTotal=totals?.totalPrice?.centAmount 
   console.log('sssssssssssss',subTotal)
 
   const totalDiscount=totals.discountOnTotalPrice?.discountedAmount?.centAmount 
 
-  const totalTax=totals.taxedPrice.totalTax.centAmount 
-  const taxedPrice=totals.taxedPrice.totalNet.centAmount
+  const totalTax=totals?.taxedPrice?.totalTax?.centAmount 
+  const taxedPrice=totals?.taxedPrice?.totalNet?.centAmount
 
   return (
     <div>
