@@ -97,6 +97,11 @@ const fetchCart = async (accessToken:string) => {
                   }
                 }
                 variant {
+                 price(currency:"USD") {
+                    value {
+                      centAmount
+                    }
+                  }
                 id
                 images {
                 url
@@ -283,7 +288,8 @@ export const useCart = (accessToken:string,customerId:string) => {
     const setShippingAddressMutation = useMutation({
       mutationFn: setShippingAddressAPI,
       onSuccess: (updatedCart) => {
-        queryClient.setQueryData(['cart'], updatedCart);
+        // queryClient.setQueryData(['cart'], updatedCart);
+        queryClient.invalidateQueries({queryKey:["cart"]})
       },
     });
   

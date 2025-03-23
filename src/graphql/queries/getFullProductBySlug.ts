@@ -18,22 +18,33 @@ export const GET_FULL_PRODUCT_BY_SLUG = `
             }
           }
         }
-        variants {
-          id  
+     variants {
+          id
+          
           attributesRaw {
-            name 
+            name
             value
           }
           assets {
-            name 
+            name
           }
           images {
             url
           }
           prices {
             value {
-              centAmount 
+              centAmount
               currencyCode
+            }
+            discounted {
+              value {
+                centAmount
+              }
+              discount {
+                predicate 
+                isValid
+                
+              }
             }
           }
         }

@@ -2,6 +2,7 @@ import { clx } from "@medusajs/ui"
 
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
+import { centsToDollars } from "utils/priceUtils"
 
 export default function ProductPrice({
   product,
@@ -13,21 +14,28 @@ export default function ProductPrice({
   // const { cheapestPrice, variantPrice } = getProductPrice({
   //   product,
   //   variantId: variant?.id,
-  // })
+  // }) 
+
+  console.log('pppppppppppppppppp',product)
+  const masterVariant=product.masterVariant 
+  const variants=product.variants
+
+
   const variantPrice={
-    calculated_price:"90",
-    calculated_price_number:90,
-    original_price:"90",
-    original_price_number:90,
-    price_type:"sale",
-    percentage_diff:"10"}; 
+    calculated_price:masterVariant.prices[0].value.centAmount,
+    calculated_price_number:masterVariant.prices[0].value.centAmount,
+    original_price:masterVariant.prices[0].value.centAmount,
+    original_price_number:masterVariant.prices[0].value.centAmount,
+    // price_type:"sale",
+    // percentage_diff:"10"
+  }; 
+
   const cheapestPrice={
-    calculated_price:"90",
-    calculated_price_number:90,
-    original_price:"90",
-    original_price_number:90,
-    price_type:"sale",
-    percentage_diff:"10"}; 
+    calculated_price:masterVariant.prices[0].value.centAmount,
+    calculated_price_number:masterVariant.prices[0].value.centAmount,
+    original_price:masterVariant.prices[0].value.centAmount,
+    original_price_number:masterVariant.prices[0].value.centAmount,
+  }; 
 
 
   const selectedPrice = variant ? variantPrice : cheapestPrice
@@ -48,7 +56,7 @@ export default function ProductPrice({
           data-testid="product-price"
           data-value={selectedPrice.calculated_price_number}
         >
-          {selectedPrice.calculated_price}
+          ${centsToDollars(selectedPrice.calculated_price)}
         </span>
       </span>
       {selectedPrice.price_type === "sale" && (
