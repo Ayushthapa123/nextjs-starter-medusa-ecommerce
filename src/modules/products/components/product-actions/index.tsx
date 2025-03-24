@@ -134,18 +134,21 @@ export default function ProductActions({
   
 
   const handleAddToCart1 = async () => {
+    // alert(JSON.stringify(product.masterVariant.prices?.[0].value.centAmount))
   
     if(!userId) {
       // alert("Please Login First")
-      await addToAnonymousCart(product.id, "1");  
-      await queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
+      await addToAnonymousCart(product.id, "1",product.masterVariant.prices?.[0].value.centAmount);  
+     queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
     window.location.reload()
 
     }else {
-    await addToCart1(product.id, "1");  
-    await queryClient.invalidateQueries({queryKey:["cart"]})
-    // refresh()
+     addToCart1(product.id, "1",product.masterVariant.prices?.[0].value.centAmount).then(() => {
+    queryClient.invalidateQueries({queryKey:["cart"]})
     window.location.reload()
+      
+    });  
+    // refresh()
     }
 
   };

@@ -1,5 +1,12 @@
 export const ADD_TO_CART_MUTATION = `
-  mutation AddToCart($cartId: String!, $version: Long!, $id: String!, $quantity: Long!) {
+  mutation AddToCart(
+    $cartId: String!, 
+    $version: Long!, 
+    $id: String!, 
+    $quantity: Long!, 
+    $centAmount: Long!, 
+  
+  ) {
     updateCart(
       id: $cartId,
       version: $version,
@@ -8,7 +15,12 @@ export const ADD_TO_CART_MUTATION = `
           addLineItem: {
             productId: $id,
             quantity: $quantity,
-            externalPrice: {centPrecision: {centAmount: "1000", currencyCode: "USD"}}
+            externalPrice: {
+              centPrecision: {
+                centAmount: $centAmount,
+                currencyCode: "USD"
+              }
+            }
           }
         }
       ]
@@ -18,10 +30,17 @@ export const ADD_TO_CART_MUTATION = `
       lineItems {
         id
         quantity
+        price {
+          value {
+            centAmount
+            currencyCode
+          }
+        }
       }
     }
   }
 `;
+
 
 
 

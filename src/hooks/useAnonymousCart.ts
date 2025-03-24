@@ -104,14 +104,14 @@ const createAnonymousCart = async (anonymousId: string) => {
 };
 
 // Add an item to the anonymous cart
-const addToAnonymousCartAPI = async ({ cartId, version, id, quantity }) => {
+const addToAnonymousCartAPI = async ({ cartId, version, id, quantity,centAmount }) => {
   const token= await getAccessToken() 
   if (!token) throw new Error("Failed to get access token");
   const response = await axios.post(
     API_URL,
     {
       query: ADD_TO_CART_MUTATION,
-      variables: { cartId, version, id, quantity },
+      variables: { cartId, version, id, quantity,centAmount },
     },
     {
       headers: {
@@ -143,20 +143,22 @@ export const useAnonymousCart = (anonymousId: string) => {
     mutationFn: () => createAnonymousCart(anonymousId),
     onSuccess: (newCart) => {
       storeCartId(newCart.id); // Store the cart ID
-      queryClient.setQueryData(["anonymousCart"], newCart);
+      // queryClient.setQueryData(["anonymousCart"], newCart);
+      queryClient.invalidateQueries({queryKey:["anonymousCart"]})
     },
   });
 
   // Mutation to add product to cart
   const addToCartMutation = useMutation({
-    mutationFn: ({ cartId, version, id, quantity }: any) =>
-      addToAnonymousCartAPI({ cartId, version, id, quantity }),
+    mutationFn: ({ cartId, version, id, quantity,centAmount }: any) =>
+      addToAnonymousCartAPI({ cartId, version, id, quantity,centAmount }),
     onSuccess: (updatedCart) => {
-      queryClient.setQueryData(["anonymousCart"], updatedCart);
+      // queryClient.setQueryData(["anonymousCart"], updatedCart);
+      queryClient.invalidateQueries({queryKey:["anonymousCart"]})
     },
   });
 
-  const addToCart = async (id: string, quantity = "1") => {
+  const addToCart = async (id: string, quantity = "1",centAmount:string) => {
     let activeCart = cart;
 
     if (!activeCart) {
@@ -168,6 +170,7 @@ export const useAnonymousCart = (anonymousId: string) => {
       version: activeCart.version,
       id, // Product ID
       quantity,
+      centAmount
     });
   };
 

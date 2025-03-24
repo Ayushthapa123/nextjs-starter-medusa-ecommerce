@@ -46,10 +46,10 @@ const Overview = ({ customer, orders }: OverviewProps) => {
       // Merge anonymous cart with the user's cart once both are available
       console.log("Merging anonymous cart items with user cart");
       // alert('ok?')
-
+    
       // Create an array of promises to add items in parallel
       const addItemPromises = anonymousCart.lineItems.map((item) => {
-        return addToCart(item.productId, "1");
+        return addToCart(item.productId, "1",item.totalPrice.centAmount);
       });
 
       // Wait for all promises to resolve

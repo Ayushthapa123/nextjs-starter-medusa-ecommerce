@@ -46,15 +46,16 @@ export default  function ProductPreview({
 
 
   const handleAddToCart = async () => {
+    
 
     if(!userId) {
    
-      await addToAnonymousCart(product.id, "1");  
+      await addToAnonymousCart(product.id, "1",product.masterData.current.masterVariant.prices?.[0].value.centAmount);  
       await queryClient.invalidateQueries({queryKey:["anonymousCart"]}) 
       // refresh()
       window.location.reload()
     }else {
-    await addToCart(product.id, "1");  
+    await addToCart(product.id, "1",product.masterData.current.masterVariant.prices?.[0].value.centAmount);  
     await queryClient.invalidateQueries({queryKey:["cart"]})
     // refresh()
     window.location.reload()

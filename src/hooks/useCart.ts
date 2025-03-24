@@ -167,13 +167,13 @@ const createCart = async (accessToken:string,customerId:string) => {
 };
 
 // Add an item to the cart
-const addToCartAPI = async ({ cartId, version, id, quantity,accessToken }) => {
+const addToCartAPI = async ({ cartId, version, id, quantity,centAmount,accessToken }) => {
 
   const response = await axios.post(
     API_URL,
     {
       query: ADD_TO_CART_MUTATION,
-      variables: { cartId, version, id, quantity },
+      variables: { cartId, version, id, quantity,centAmount },
     },
     {
       headers: {
@@ -256,7 +256,8 @@ export const useCart = (accessToken:string,customerId:string) => {
   const createCartMutation = useMutation({
     mutationFn: (accessToken: string) => createCart(accessToken, customerId),
     onSuccess: (newCart) => {
-      queryClient.setQueryData(["cart"], newCart);
+      // queryClient.setQueryData(["cart"], newCart);
+      queryClient.invalidateQueries({queryKey:["cart"]})
     },
   });
 
@@ -264,11 +265,12 @@ export const useCart = (accessToken:string,customerId:string) => {
   const addToCartMutation = useMutation({
     mutationFn: addToCartAPI,
     onSuccess: (updatedCart) => {
-      queryClient.setQueryData(["cart"], updatedCart);
+      // queryClient.setQueryData(["cart"], updatedCart);
+      queryClient.invalidateQueries({queryKey:["cart"]})
     },
   });
 
-  const addToCart = async (id: string, quantity = "1") => {
+  const addToCart = async (id: string, quantity = "1",centAmount:string) => {
     let activeCart = cart;
 
     if (!activeCart) {
@@ -280,6 +282,7 @@ export const useCart = (accessToken:string,customerId:string) => {
       version: activeCart.version,
       id, // Product ID
       quantity,
+      centAmount,
       accessToken
     });
   };
@@ -312,6 +315,7 @@ export const useCart = (accessToken:string,customerId:string) => {
       mutationFn: applyPromoCodeAPI,
       onSuccess: (updatedCart) => {
         // queryClient.setQueryData(["cart"], updatedCart);
+        queryClient.invalidateQueries({queryKey:["cart"]})
       },
     });
     

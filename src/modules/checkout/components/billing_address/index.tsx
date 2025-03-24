@@ -2,6 +2,7 @@ import { HttpTypes } from "@medusajs/types"
 import Input from "@modules/common/components/input"
 import React, { useState } from "react"
 import CountrySelect from "../country-select"
+import { useZone } from "hooks/useZone"
 
 const BillingAddress = ({ cart ,customer,billingAddress}: { cart: HttpTypes.StoreCart | null,customer:any ,billingAddress:any}) => {
   const [formData, setFormData] = useState<any>({
@@ -26,6 +27,16 @@ const BillingAddress = ({ cart ,customer,billingAddress}: { cart: HttpTypes.Stor
       [e.target.name]: e.target.value,
     })
   }
+
+   const {zones}=useZone()
+    const region={
+      countries:zones.map((z)=>{
+        return {
+          iso_2:z.locations[0].country,
+          display_name:z.name
+        }
+      })
+    }
 
   return (
     <>
@@ -85,7 +96,7 @@ const BillingAddress = ({ cart ,customer,billingAddress}: { cart: HttpTypes.Stor
         <CountrySelect
           name="billing_address.country_code"
           autoComplete="country"
-          region={cart?.region}
+          region={region}
           value={formData["billing_address.country_code"]}
           onChange={handleChange}
           // required

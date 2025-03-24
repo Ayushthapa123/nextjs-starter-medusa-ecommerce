@@ -6,6 +6,7 @@ import { mapKeys } from "lodash"
 import React, { useEffect, useMemo, useState } from "react"
 import AddressSelect from "../address-select"
 import CountrySelect from "../country-select"
+import { useZone } from "hooks/useZone"
 
 const ShippingAddress = ({
   customer,
@@ -96,12 +97,23 @@ const ShippingAddress = ({
     })
   }
 
-  const region = {
-    countries: [
-      { iso_2: "US", display_name: "United States" },
-      { iso_2: "CA", display_name: "Canada" },
-      { iso_2: "GB", display_name: "United Kingdom" },
-    ],
+
+  // const region = {
+  //   countries: [
+  //     { iso_2: "US", display_name: "United States" },
+  //     { iso_2: "CA", display_name: "Canada" },
+  //     { iso_2: "GB", display_name: "United Kingdom" },
+  //   ],
+  // }
+
+  const {zones}=useZone()
+  const region={
+    countries:zones.map((z)=>{
+      return {
+        iso_2:z.locations[0].country,
+        display_name:z.name
+      }
+    })
   }
 
   return (
