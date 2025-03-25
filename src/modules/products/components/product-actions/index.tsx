@@ -153,22 +153,56 @@ export default function ProductActions({
 
   };
 
+  console.log('vvvvvvvvvvvvvvvvvvvvvv',product.variants)
+
+  const getVariantOptions = (variants) => {
+    const options = {};
+  
+    variants.forEach((variant) => {
+      variant.attributesRaw.forEach(({ name, value }) => {
+        if (!options[name]) options[name] = new Set();
+        options[name].add(value);
+      });
+    });
+  
+    return Object.fromEntries(
+      Object.entries(options).map(([key, value]) => [key, Array.from(value)])
+    );
+  };
+  const actualVariants=getVariantOptions(product.variants)
+  console.log('xxxxxxxxxxxxx',actualVariants)
+  const sizeVariant=actualVariants?.size 
+  console.log('xxxxxxxxxxxsize',sizeVariant)
 
   return (
     <>
       <div className="flex flex-col gap-y-2" ref={actionsRef}>
         <div>
+          
 
           {(product.variants?.length ?? 0) > 1 && (
             <div className="flex flex-col gap-y-4">
-              {(product.options || []).map((option) => {
+              {Object.entries(actualVariants).map(([id, values]) => {
+                // Transform values into the format expected by OptionSelect
+                const processedValues = Array.isArray(values) ? values.map(value => ({
+                  value: typeof value === 'object' && value !== null 
+                    ? (value['en-GB'] || value['en-US'] || Object.values(value)[0])?.toString() 
+                    : value?.toString()
+                })) : [];
+
+                const option = {
+                  id,
+                  title: id.charAt(0).toUpperCase() + id.slice(1), 
+                  values: processedValues
+                };
+
                 return (
                   <div key={option.id}>
                     <OptionSelect
                       option={option}
                       current={options[option.id]}
                       updateOption={setOptionValue}
-                      title={option.title ?? ""}
+                      title={option.title}
                       data-testid="product-options"
                       disabled={!!disabled || isAdding}
                     />
@@ -178,6 +212,7 @@ export default function ProductActions({
               <Divider />
             </div>
           )}
+          
         </div>
 
         <ProductPrice product={product} variant={selectedVariant} />
