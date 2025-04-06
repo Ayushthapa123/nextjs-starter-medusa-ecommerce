@@ -6,6 +6,7 @@ import Payment from "@modules/checkout/components/payment"
 import Review from "@modules/checkout/components/review"
 import Shipping from "@modules/checkout/components/shipping"
 import { useCustomer } from "hooks/useCustomer"
+import { useAnonymousCartStore } from "store/useAnonymousCartStore"
 import { useAuthStore } from "store/useAuthStore"
 
 const sampleShippingOptions: StoreCartShippingOption[] = [
@@ -138,6 +139,7 @@ export default  function CheckoutForm({
 const {accessToken}=useAuthStore()
 
   const {customer:ourCustomer}=useCustomer(accessToken??"")
+  const {anonymousCartId}=useAnonymousCartStore()
 
   if (!cart && !ourCustomer) {
     return null
@@ -156,13 +158,13 @@ const {accessToken}=useAuthStore()
 
   return (
     <div className="w-full grid grid-cols-1 gap-y-8">
-      {accessToken && cart &&<Addresses cart={cart} customer={ourCustomer}  accessToken={accessToken} customerId={ourCustomer?.customer.id}/>}
+      { cart &&<Addresses cart={cart} customer={ourCustomer}  accessToken={accessToken} customerId={ourCustomer?.customer.id} anonymousCartId={anonymousCartId}/>}
 
       {cart &&<Shipping cart={cart} availableShippingMethods={shippingMethods} />}
 
-     {cart && <Payment cart={cart} availablePaymentMethods={paymentMethods} />}
+      {cart && <Payment cart={cart} availablePaymentMethods={paymentMethods} />}
 
-      {cart && accessToken &&<Review cart={cart} customerId={ourCustomer?.customer.id} accessToken={accessToken} /> }
+      {cart  &&<Review cart={cart} customerId={ourCustomer?.customer.id} accessToken={accessToken} anonymousCartId={anonymousCartId} /> }
     </div>
   )
 }

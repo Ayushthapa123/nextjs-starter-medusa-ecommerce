@@ -3,6 +3,7 @@ import { useEffect, useState, ComponentType } from "react";
 import { useSetGetAccessToken } from "hooks/useSetGetAccessToken";
 import { useRouter } from "next/navigation";
 import WithAuthDetailProps from "./types/withAuthDetailProps";
+import { useAnonymousCartStore } from "store/useAnonymousCartStore";
 
 
 
@@ -10,7 +11,8 @@ import WithAuthDetailProps from "./types/withAuthDetailProps";
 const WithAuthDetail = <P extends object>(WrappedComponent: ComponentType<P & WithAuthDetailProps>) => {
   return (props: P) => {
     // const [loading, setLoading] = useState(true);
-    const { accessToken } = useAuthStore();
+    const { accessToken } = useAuthStore(); 
+    const {anonymousCartId}=useAnonymousCartStore()
 
     const [userId,setUserId]=useState(null);
     useEffect(()=> {
@@ -18,12 +20,12 @@ const WithAuthDetail = <P extends object>(WrappedComponent: ComponentType<P & Wi
       setUserId(userId)
     },[])
 
-    if (!accessToken || !userId ) {
-      return <div>Loading...</div>; // Replace with a proper loading component if needed
-    }
+    // if (!accessToken || !userId ) {
+    //   return <div>Loading...</div>; // Replace with a proper loading component if needed
+    // }
 
     return (
-        <WrappedComponent {...props} userId={userId} accessToken={accessToken} />
+        <WrappedComponent {...props} userId={userId} accessToken={accessToken} anonymousCartId={anonymousCartId} />
     );
   };
 };

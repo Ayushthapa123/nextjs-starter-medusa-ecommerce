@@ -5,10 +5,12 @@ import { Button, Heading, Text, clx } from "@medusajs/ui"
 import PaymentButton from "../payment-button"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCart } from "hooks/useCart"
+import { useAnonymousCart } from "hooks/useAnonymousCart"
 
-const Review = ({ cart ,customerId, accessToken}: { cart: any ,customerId:string , accessToken:string}) => {
+const Review = ({ cart ,customerId, accessToken,anonymousCartId}: { cart: any ,customerId:string , accessToken:string,anonymousCartId:string}) => {
   const searchParams = useSearchParams()
   const {placeOrder}=useCart(accessToken,customerId)
+  const {placeOrderAnonymous}=useAnonymousCart(anonymousCartId)
 
   const isOpen = searchParams.get("step") === "review"
 
@@ -25,6 +27,7 @@ const Review = ({ cart ,customerId, accessToken}: { cart: any ,customerId:string
     (cart.payment_collection || paidByGiftcard)
 
     const handlePlaceOrder = async () => {
+      if(customerId) {
       try {
         await placeOrder() 
         alert('Order Placed Successfully')
@@ -32,6 +35,16 @@ const Review = ({ cart ,customerId, accessToken}: { cart: any ,customerId:string
       } catch (error) {
         console.error("Error in placeOrder:", error)
       }
+    }else {
+      try {
+        await placeOrderAnonymous() 
+        alert('Order Placed Successfully with anonymous')
+        localStorage.clear()
+        router.push("/account", { scroll: false })
+      } catch (error) {
+        console.error("Error in placeOrder:", error)
+      }
+    }
     }
 
   return (

@@ -14,17 +14,21 @@ import ErrorMessage from "../error-message";
 import ShippingAddress from "../shipping-address";
 import { SubmitButton } from "../submit-button";
 import { useCart } from "hooks/useCart";
+import { useAnonymousCart } from "hooks/useAnonymousCart";
+import { set } from "lodash";
 
 const Addresses = ({
   cart,
   customer,
   accessToken,
   customerId,
+  anonymousCartId
 }: {
   cart: HttpTypes.StoreCart | null;
   customer: HttpTypes.StoreCustomer | null;
   accessToken: string;
   customerId: string;
+  anonymousCartId?:string | null
 }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -43,7 +47,8 @@ const Addresses = ({
   };
 
   const [message, formAction] = useActionState(setAddresses, null);
-  const { setShippingAddress } = useCart(accessToken, customerId);
+  const { setShippingAddress } = useCart(accessToken, customerId); 
+  const {setAnonymousShippingAddress}=useAnonymousCart(anonymousCartId)
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault(); // Prevent page reload
 
@@ -103,7 +108,13 @@ const Addresses = ({
       phone: billingAddress.phone,
     }
 
-    setShippingAddress(address,sameAsBilling?address:billingAddressModified);
+    if(!customerId) {
+      setAnonymousShippingAddress(address, sameAsBilling?address:billingAddressModified)
+
+    }else {
+      setShippingAddress(address,sameAsBilling?address:billingAddressModified);
+
+    }
     // alert(JSON.stringify(data)); // Debugging: Check collected data
     router.push(pathname + "?step=delivery");
   };
@@ -137,7 +148,7 @@ const Addresses = ({
       {isOpen ? (
         <form onSubmit={handleSubmit}>
           <div className="pb-8">
-            {customer && (
+            {true && (
               <ShippingAddress
                 customer={customer?.customer}
                 checked={sameAsBilling}

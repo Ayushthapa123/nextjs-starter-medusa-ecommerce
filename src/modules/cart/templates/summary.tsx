@@ -43,7 +43,7 @@ const Summary = ({ cart }: SummaryProps) => {
         data-testid="checkout-button"
         
       >
-        <Button className="w-full h-10" disabled={accessToken ? false : true}>Go to checkout </Button>
+        <Button className="w-full h-10" >Go to checkout </Button>
       </LocalizedClientLink>
     </div>
   )

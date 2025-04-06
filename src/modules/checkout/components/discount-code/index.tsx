@@ -11,6 +11,7 @@ import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
 import { useCart } from "hooks/useCart";
+import { useAnonymousCart } from "hooks/useAnonymousCart";
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
@@ -24,6 +25,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
   const [isOpen, setIsOpen] = React.useState(false)
 
   const {applyPromoCode}=useCart(userId,accessToken)
+  const {applyPromoCodeAnonymous}=useAnonymousCart(cart.id)
 
   const { items = [], promotions = [] } = cart
   const removePromotionCode = async (code: string) => {
@@ -42,6 +44,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
       return
     }
  
+    if(userId) {
        applyPromoCode(code.toString()).then((res)=> {
         if(res?.errors){
           alert(res.errors?.[0]?.message)
@@ -52,6 +55,19 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
           window.location.reload()
         }
       }); 
+    }else {
+     
+      applyPromoCodeAnonymous(code.toString()).then((res)=> {
+        if(res?.errors){
+          alert(res.errors?.[0]?.message)
+          window.location.reload()
+
+        }else {
+          alert("Promo code applied successfully!");
+          window.location.reload()
+        }
+      }
+    )}
 
  
     // return
