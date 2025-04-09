@@ -23,19 +23,19 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
             Shipping Address
           </Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {order.shipping_address?.first_name}{" "}
-            {order.shipping_address?.last_name}
+            {order.shippingAddress?.firstName}{" "}
+            {order.shippingAddress?.lastName}
           </Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {order.shipping_address?.address_1}{" "}
-            {order.shipping_address?.address_2}
+            {order.shippingAddress?.address_1}{" "}
+            {order.shippingAddress?.address_2}
           </Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {order.shipping_address?.postal_code},{" "}
-            {order.shipping_address?.city}
+            {order.shippingAddress?.postalCode},{" "}
+            {order.shippingAddress?.city}
           </Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {order.shipping_address?.country_code?.toUpperCase()}
+            {order.shippingAddress?.countryCode?.toUpperCase()}
           </Text>
         </div>
 
@@ -45,9 +45,9 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
         >
           <Text className="txt-medium-plus text-ui-fg-base mb-1">Contact</Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {order.shipping_address?.phone}
+            {order.shippingAddress?.phone}
           </Text>
-          <Text className="txt-medium text-ui-fg-subtle">{order.email}</Text>
+          <Text className="txt-medium text-ui-fg-subtle">{order.customerEmail}</Text>
         </div>
 
         <div
@@ -56,14 +56,15 @@ const ShippingDetails = ({ order }: ShippingDetailsProps) => {
         >
           <Text className="txt-medium-plus text-ui-fg-base mb-1">Method</Text>
           <Text className="txt-medium text-ui-fg-subtle">
-            {(order as any).shipping_methods[0]?.name} (
+            Cash on delivery
+            {/* {(order as any).shipping_methods[0]?.name} (
             {convertToLocale({
               amount: order.shipping_methods?.[0].total ?? 0,
               currency_code: order.currency_code,
             })
               .replace(/,/g, "")
               .replace(/\./g, ",")}
-            )
+            ) */}
           </Text>
         </div>
       </div>

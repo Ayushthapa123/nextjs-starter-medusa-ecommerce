@@ -11,7 +11,7 @@ type ItemsProps = {
 }
 
 const Items = ({ order }: ItemsProps) => {
-  const items = order.items
+  const items = order.lineItems
 
   return (
     <div className="flex flex-col">
@@ -21,14 +21,14 @@ const Items = ({ order }: ItemsProps) => {
           {items?.length
             ? items
                 .sort((a, b) => {
-                  return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
+                  return (a.createdAt ?? "") > (b.createdAt ?? "") ? -1 : 1
                 })
                 .map((item) => {
                   return (
                     <Item
                       key={item.id}
                       item={item}
-                      currencyCode={order.currency_code}
+                      currencyCode={"USD"}
                     />
                   )
                 })

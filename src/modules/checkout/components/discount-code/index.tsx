@@ -48,11 +48,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
        applyPromoCode(code.toString()).then((res)=> {
         if(res?.errors){
           alert(res.errors?.[0]?.message)
-          window.location.reload()
+          // window.location.reload()
 
         }else {
           alert("Promo code applied successfully!");
-          window.location.reload()
+          // window.location.reload()
         }
       }); 
     }else {
@@ -60,11 +60,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart ,userId,accessToken}) 
       applyPromoCodeAnonymous(code.toString()).then((res)=> {
         if(res?.errors){
           alert(res.errors?.[0]?.message)
-          window.location.reload()
+          // window.location.reload()
 
         }else {
           alert("Promo code applied successfully!");
-          window.location.reload()
+          // window.location.reload()
         }
       }
     )}

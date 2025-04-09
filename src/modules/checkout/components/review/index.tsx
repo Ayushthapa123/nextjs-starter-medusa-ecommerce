@@ -27,20 +27,31 @@ const Review = ({ cart ,customerId, accessToken,anonymousCartId}: { cart: any ,c
     (cart.payment_collection || paidByGiftcard)
 
     const handlePlaceOrder = async () => {
+      alert('Order Placed Successfully')
       if(customerId) {
       try {
-        await placeOrder() 
-        alert('Order Placed Successfully')
-        router.push("/account", { scroll: false })
+         placeOrder().then((res) => {
+           if (res?.errors) {
+             alert(res.errors?.[0]?.message)
+           }else {
+            router.push(`/order/${res.id}/confirmed`, { scroll: false })
+           }
+         })
+  
+ 
       } catch (error) {
         console.error("Error in placeOrder:", error)
       }
     }else {
       try {
-        await placeOrderAnonymous() 
-        alert('Order Placed Successfully with anonymous')
+       placeOrderAnonymous().then((res) => {
+         if (res?.errors) {
+           alert(res.errors?.[0]?.message)
+         }else {
+          router.push(`/order/${res.id}/confirmed`, { scroll: false })
+         }
+       })
         localStorage.clear()
-        router.push("/account", { scroll: false })
       } catch (error) {
         console.error("Error in placeOrder:", error)
       }
